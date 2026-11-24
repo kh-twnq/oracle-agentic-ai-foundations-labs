@@ -22,4 +22,4 @@ Bắt đầu từ kiểm tra OCI profile và tenancy. Sau khi mở `ClientSessio
 
 [Client OCI Usage](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/Real%20World%20MCP/01_oci_usage_mcp_client.py) · [Agent OCI Usage](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/Real%20World%20MCP/02_oci_usage_mcp_agent.py)
 
-Trong workspace cục bộ, báo cáo mẫu nằm ở `results/oci-usage-agent-synthetic.csv`.
+Xem [báo cáo OCI Usage với dữ liệu giả lập](../labs/sample-results/oci-usage-agent-synthetic.csv).

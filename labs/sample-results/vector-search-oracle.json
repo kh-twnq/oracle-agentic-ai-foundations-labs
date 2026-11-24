@@ -1,0 +1,227 @@
+{
+  "engine": "Oracle AI Database 26ai via Oracle FreeSQL guest worksheet",
+  "product_count": 10,
+  "dimensions": 384,
+  "vector_scale": 1000,
+  "method": "Read-only SQL with TO_VECTOR and VECTOR_DISTANCE(..., COSINE). Calculated both queries against five two-product batches and merged Oracle distances.",
+  "sqlite_order_agrees": true,
+  "queries": [
+    {
+      "query": "gear for exercising at home",
+      "limit": 3,
+      "price_below_usd": null,
+      "matches": [
+        {
+          "name": "Fitness Tracker",
+          "price_usd": 49.99,
+          "distance": 0.668162
+        },
+        {
+          "name": "Yoga Mat",
+          "price_usd": 29.99,
+          "distance": 0.670265
+        },
+        {
+          "name": "Climbing Harness",
+          "price_usd": 79.99,
+          "distance": 0.726026
+        }
+      ],
+      "max_distance_delta_vs_sqlite": 0.000468
+    },
+    {
+      "query": "protection for water sports",
+      "limit": 5,
+      "price_below_usd": 100,
+      "matches": [
+        {
+          "name": "Swimming Goggles",
+          "price_usd": 24.99,
+          "distance": 0.477345
+        },
+        {
+          "name": "Cycling Helmet",
+          "price_usd": 69.99,
+          "distance": 0.663017
+        },
+        {
+          "name": "Basketball",
+          "price_usd": 34.99,
+          "distance": 0.683993
+        },
+        {
+          "name": "Climbing Harness",
+          "price_usd": 79.99,
+          "distance": 0.753359
+        },
+        {
+          "name": "Yoga Mat",
+          "price_usd": 29.99,
+          "distance": 0.778449
+        }
+      ],
+      "max_distance_delta_vs_sqlite": 0.000457
+    }
+  ],
+  "oracle_batches": [
+    {
+      "catalog_ids": [
+        1,
+        2
+      ],
+      "rows": [
+        {
+          "query_no": 1,
+          "batch_rank": 1,
+          "name": "Hiking Boots",
+          "price_usd": 149.99,
+          "distance": 0.812
+        },
+        {
+          "query_no": 1,
+          "batch_rank": 2,
+          "name": "Running Shoes",
+          "price_usd": 89.99,
+          "distance": 0.893341
+        },
+        {
+          "query_no": 2,
+          "batch_rank": 1,
+          "name": "Running Shoes",
+          "price_usd": 89.99,
+          "distance": 0.852814
+        }
+      ]
+    },
+    {
+      "catalog_ids": [
+        3,
+        4
+      ],
+      "rows": [
+        {
+          "query_no": 1,
+          "batch_rank": 1,
+          "name": "Yoga Mat",
+          "price_usd": 29.99,
+          "distance": 0.670265
+        },
+        {
+          "query_no": 1,
+          "batch_rank": 2,
+          "name": "Tennis Racket",
+          "price_usd": 199.99,
+          "distance": 0.797029
+        },
+        {
+          "query_no": 2,
+          "batch_rank": 1,
+          "name": "Yoga Mat",
+          "price_usd": 29.99,
+          "distance": 0.778449
+        }
+      ]
+    },
+    {
+      "catalog_ids": [
+        5,
+        6
+      ],
+      "rows": [
+        {
+          "query_no": 1,
+          "batch_rank": 1,
+          "name": "Climbing Harness",
+          "price_usd": 79.99,
+          "distance": 0.726026
+        },
+        {
+          "query_no": 1,
+          "batch_rank": 2,
+          "name": "Basketball",
+          "price_usd": 34.99,
+          "distance": 0.810991
+        },
+        {
+          "query_no": 2,
+          "batch_rank": 1,
+          "name": "Basketball",
+          "price_usd": 34.99,
+          "distance": 0.683993
+        },
+        {
+          "query_no": 2,
+          "batch_rank": 2,
+          "name": "Climbing Harness",
+          "price_usd": 79.99,
+          "distance": 0.753359
+        }
+      ]
+    },
+    {
+      "catalog_ids": [
+        7,
+        8
+      ],
+      "rows": [
+        {
+          "query_no": 1,
+          "batch_rank": 1,
+          "name": "Cycling Helmet",
+          "price_usd": 69.99,
+          "distance": 0.737695
+        },
+        {
+          "query_no": 1,
+          "batch_rank": 2,
+          "name": "Swimming Goggles",
+          "price_usd": 24.99,
+          "distance": 0.859821
+        },
+        {
+          "query_no": 2,
+          "batch_rank": 1,
+          "name": "Swimming Goggles",
+          "price_usd": 24.99,
+          "distance": 0.477345
+        },
+        {
+          "query_no": 2,
+          "batch_rank": 2,
+          "name": "Cycling Helmet",
+          "price_usd": 69.99,
+          "distance": 0.663017
+        }
+      ]
+    },
+    {
+      "catalog_ids": [
+        9,
+        10
+      ],
+      "rows": [
+        {
+          "query_no": 1,
+          "batch_rank": 1,
+          "name": "Fitness Tracker",
+          "price_usd": 49.99,
+          "distance": 0.668162
+        },
+        {
+          "query_no": 1,
+          "batch_rank": 2,
+          "name": "Camping Tent",
+          "price_usd": 129.99,
+          "distance": 0.999897
+        },
+        {
+          "query_no": 2,
+          "batch_rank": 1,
+          "name": "Fitness Tracker",
+          "price_usd": 49.99,
+          "distance": 0.976238
+        }
+      ]
+    }
+  ]
+}

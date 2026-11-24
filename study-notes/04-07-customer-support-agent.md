@@ -25,4 +25,4 @@ Cùng cấu trúc, câu hỏi về policy đi vào FAQ và yêu cầu hoàn ti�
 
 [Lab hỗ trợ khách hàng](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/OpenAI/08_customer_support.py)
 
-Trong workspace cục bộ, trace của lần chạy thử nằm ở `results/OpenAI-08_customer_support.log`.
+Bộ [local fixture](../labs/run_local_labs.py) lưu log bài này ở `labs/results/OpenAI-08_customer_support.log` khi chạy.

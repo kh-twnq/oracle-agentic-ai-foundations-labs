@@ -6,6 +6,8 @@ Các bài có 27 sơ đồ minh họa được vẽ lại từ phần kiến tr�
 
 [Oracle Agentic AI Foundations: Hands-on Workshop (Student Guide), D1114464GC10](https://mylearn.oracle.com/ou/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course)
 
+[Hướng dẫn chạy lab và kết quả mẫu](../labs/README.md)
+
 [Mã lab công khai của Oracle University](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations)
 
 ## 01. Nhập môn AI agent

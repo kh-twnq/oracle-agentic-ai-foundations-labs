@@ -8,7 +8,7 @@ Công cụ có thể dùng RAG để truy xuất tài liệu, NL2SQL để tra c
 
 Trong bài trả hàng, tool đọc đơn, workflow kiểm tra điều kiện trong cửa sổ 30 ngày, rồi PL/SQL cập nhật trạng thái khi đạt yêu cầu. Agent chỉ nên xác nhận đã duyệt sau khi tool xác nhận cập nhật thành công. Một bước gửi thông báo cần có công cụ và bằng chứng thực thi riêng.
 
-Trong workspace cục bộ, bài mô phỏng nằm ở `customer_return_local.py` và kết quả kiểm tra ở `results/customer-return-local.json`.
+Xem [lab mô phỏng trả hàng](../labs/customer_return_local.py) và [kết quả kiểm tra quy tắc trả hàng](../labs/sample-results/customer-return-local.json).
 
 ![Select AI Agent lập kế hoạch, dùng NL2SQL kiểm tra order 5821, gọi PL/SQL cập nhật rồi xác nhận kết quả.](images/06-06-select-ai-return-flow.png)
 

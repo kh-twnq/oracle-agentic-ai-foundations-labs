@@ -1,0 +1,72 @@
+{
+  "engine": "SQLite with cosine distance",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dimensions": 384,
+  "catalog": "Ten workshop products with paraphrased descriptions",
+  "product_count": 10,
+  "keyword_match_count": 0,
+  "queries": [
+    {
+      "query": "gear for exercising at home",
+      "limit": 3,
+      "price_below_usd": null,
+      "matches": [
+        {
+          "name": "Fitness Tracker",
+          "price_usd": 49.99,
+          "category": "Electronics",
+          "distance": 0.66863
+        },
+        {
+          "name": "Yoga Mat",
+          "price_usd": 29.99,
+          "category": "Fitness",
+          "distance": 0.67066
+        },
+        {
+          "name": "Climbing Harness",
+          "price_usd": 79.99,
+          "category": "Outdoor",
+          "distance": 0.72604
+        }
+      ]
+    },
+    {
+      "query": "protection for water sports",
+      "limit": 5,
+      "price_below_usd": 100,
+      "matches": [
+        {
+          "name": "Swimming Goggles",
+          "price_usd": 24.99,
+          "category": "Aquatics",
+          "distance": 0.47697
+        },
+        {
+          "name": "Cycling Helmet",
+          "price_usd": 69.99,
+          "category": "Cycling",
+          "distance": 0.66256
+        },
+        {
+          "name": "Basketball",
+          "price_usd": 34.99,
+          "category": "Sports",
+          "distance": 0.68414
+        },
+        {
+          "name": "Climbing Harness",
+          "price_usd": 79.99,
+          "category": "Outdoor",
+          "distance": 0.75323
+        },
+        {
+          "name": "Yoga Mat",
+          "price_usd": 29.99,
+          "category": "Fitness",
+          "distance": 0.77812
+        }
+      ]
+    }
+  ]
+}

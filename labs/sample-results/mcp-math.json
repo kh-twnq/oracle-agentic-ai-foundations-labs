@@ -1,0 +1,55 @@
+[
+  {
+    "tool": "add",
+    "input": {
+      "a": 42,
+      "b": 58
+    },
+    "result": "100.0"
+  },
+  {
+    "tool": "multiply",
+    "input": {
+      "a": 15,
+      "b": 8
+    },
+    "result": "120.0"
+  },
+  {
+    "tool": "divide",
+    "input": {
+      "a": 120,
+      "b": 3
+    },
+    "result": "40.0"
+  },
+  {
+    "tool": "square_root",
+    "input": {
+      "number": 84
+    },
+    "result": "9.16515138991168"
+  },
+  {
+    "tool": "divide",
+    "input": {
+      "a": 100,
+      "b": 0
+    },
+    "result": "Error: Cannot divide by zero"
+  },
+  {
+    "tool": "square_root",
+    "input": {
+      "number": -1
+    },
+    "result": "Error: Cannot take square root of a negative number"
+  },
+  {
+    "tool": "multiply",
+    "input": {
+      "a": 5
+    },
+    "schema_error": true
+  }
+]

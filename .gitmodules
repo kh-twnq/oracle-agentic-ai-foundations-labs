@@ -1,0 +1,3 @@
+[submodule "labs/oracle-university"]
+	path = labs/oracle-university
+	url = https://github.com/oracle-university-labs/ou-generativeai-pro.git

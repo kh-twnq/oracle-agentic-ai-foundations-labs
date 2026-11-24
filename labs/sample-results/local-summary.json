@@ -1,0 +1,87 @@
+[
+  {
+    "lab": "MCP math server",
+    "status": "passed",
+    "mode": "real local stdio"
+  },
+  {
+    "lab": "LangChain/core_building_blocks.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "LangChain/first_agent.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "MCP/first_agent_with_mcp.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/01_hello_responses.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/02_stateful_conversation.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/03_web_search.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/04_first_agent.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/05_function_tools.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/06_multi_agent_handoffs.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/07_guardrails.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OpenAI/08_customer_support.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OCI/oci_first_agent.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OCI/oci_first_agent_simple.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OCI/oci_first_agent_sdk.py",
+    "status": "passed",
+    "mode": "deterministic local model fixture"
+  },
+  {
+    "lab": "OCI Usage MCP discovery",
+    "status": "passed",
+    "mode": "real local stdio"
+  },
+  {
+    "lab": "OCI Usage pivot and CSV",
+    "status": "passed",
+    "mode": "synthetic usage records"
+  }
+]

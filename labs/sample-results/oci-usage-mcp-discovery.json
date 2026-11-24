@@ -1,0 +1,57 @@
+{
+  "server": "oracle.oci-usage-mcp-server",
+  "protocol_version": "2025-11-25",
+  "tools": {
+    "get_summarized_usage": {
+      "additionalProperties": false,
+      "properties": {
+        "tenant_id": {
+          "description": "Tenancy OCID",
+          "type": "string"
+        },
+        "start_time": {
+          "description": "The value to assign to the time_usage_started property of this RequestSummarizedUsagesDetails.UTC date must have the right precision: hours, minutes, seconds, and second fractions must be 0",
+          "type": "string"
+        },
+        "end_time": {
+          "description": "The value to assign to the time_usage_ended property of this RequestSummarizedUsagesDetails.UTC date must have the right precision: hours, minutes, seconds, and second fractions must be 0",
+          "type": "string"
+        },
+        "group_by": {
+          "description": "Aggregate the result by.Allows values are \u201ctagNamespace\u201d, \u201ctagKey\u201d, \u201ctagValue\u201d, \u201cservice\u201d,\u201cskuName\u201d, \u201cskuPartNumber\u201d, \u201cunit\u201d, \u201ccompartmentName\u201d, \u201ccompartmentPath\u201d, \u201ccompartmentId\u201d\u201cplatform\u201d, \u201cregion\u201d, \u201clogicalAd\u201d, \u201cresourceId\u201d, \u201ctenantId\u201d, \u201ctenantName\u201d",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "compartment_depth": {
+          "description": "The compartment depth level.",
+          "type": "number"
+        },
+        "granularity": {
+          "default": "DAILY",
+          "description": "Allowed values for this property are: \"HOURLY\", \"DAILY\", \"MONTHLY\". Default: \"DAILY\"",
+          "type": "string"
+        },
+        "query_type": {
+          "default": "COST",
+          "description": "Allowed values are: \"USAGE\", \"COST\", \"CREDIT\", \"EXPIREDCREDIT\", \"ALLCREDIT\", \"OVERAGE\"Default: \"COST\"",
+          "type": "string"
+        },
+        "is_aggregate_by_time": {
+          "default": false,
+          "description": "Specifies whether aggregated by time. If isAggregateByTime is true,all usage or cost over the query time period will be added up.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "tenant_id",
+        "start_time",
+        "end_time",
+        "group_by",
+        "compartment_depth"
+      ],
+      "type": "object"
+    }
+  }
+}

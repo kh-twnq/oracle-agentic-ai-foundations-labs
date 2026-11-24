@@ -16,7 +16,7 @@ FETCH FIRST 5 ROWS ONLY;
 
 Workspace có kết quả chạy SQLite với vector thật và đối chiếu bằng `VECTOR_DISTANCE` trên Oracle FreeSQL. Tài liệu minh họa và lần chạy cục bộ có thể cho thứ hạng khác nhau khi thay mô tả sản phẩm. README của lab ghi các khác biệt và cách kiểm tra truy vấn từ khóa.
 
-Trong workspace cục bộ, script chạy thử là `vector_search_local.py` và kết quả đối chiếu nằm ở `results/vector-search-oracle.json`.
+Xem [script Vector Search](../labs/vector_search_local.py), [kết quả Oracle FreeSQL](../labs/sample-results/vector-search-oracle.json) và [SQL dùng để đối chiếu](../labs/sample-results/vector-search-oracle.sql).
 
 ![Encode truy vấn đồ thể thao dưới nước, lọc giá dưới 100, xếp hạng bằng cosine distance rồi trả top 5.](images/06-04-vector-relational-query.png)
 

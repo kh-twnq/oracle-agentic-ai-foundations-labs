@@ -1,0 +1,122 @@
+{
+  "engine": "SQLite with parameterized SQL and deterministic Python orchestration",
+  "data": "Synthetic workshop scenario. Return window measured from delivery in this reproduction.",
+  "as_of": "2026-11-23",
+  "shipping_labels_sent": 0,
+  "cases": [
+    {
+      "order_id": 5821,
+      "outcome": "Return Approved",
+      "trace": [
+        {
+          "step": "Planning",
+          "action": "Find order → check eligibility → update → verify"
+        },
+        {
+          "step": "Tool Use",
+          "action": "Look up order",
+          "found": true
+        },
+        {
+          "step": "Eligibility",
+          "days_since_delivery": 13
+        },
+        {
+          "step": "Tool Use",
+          "action": "Update order status",
+          "rows_changed": 1
+        },
+        {
+          "step": "Reflection",
+          "verified_status": "Return Approved"
+        }
+      ]
+    },
+    {
+      "order_id": 5822,
+      "outcome": "Return Approved",
+      "trace": [
+        {
+          "step": "Planning",
+          "action": "Find order → check eligibility → update → verify"
+        },
+        {
+          "step": "Tool Use",
+          "action": "Look up order",
+          "found": true
+        },
+        {
+          "step": "Eligibility",
+          "days_since_delivery": 30
+        },
+        {
+          "step": "Tool Use",
+          "action": "Update order status",
+          "rows_changed": 1
+        },
+        {
+          "step": "Reflection",
+          "verified_status": "Return Approved"
+        }
+      ]
+    },
+    {
+      "order_id": 5823,
+      "outcome": "Outside 30-day window",
+      "trace": [
+        {
+          "step": "Planning",
+          "action": "Find order → check eligibility → update → verify"
+        },
+        {
+          "step": "Tool Use",
+          "action": "Look up order",
+          "found": true
+        },
+        {
+          "step": "Eligibility",
+          "days_since_delivery": 31
+        }
+      ]
+    },
+    {
+      "order_id": 9999,
+      "outcome": "Order not found",
+      "trace": [
+        {
+          "step": "Planning",
+          "action": "Find order → check eligibility → update → verify"
+        },
+        {
+          "step": "Tool Use",
+          "action": "Look up order",
+          "found": false
+        }
+      ]
+    },
+    {
+      "order_id": 5821,
+      "outcome": "Already approved",
+      "trace": [
+        {
+          "step": "Planning",
+          "action": "Find order → check eligibility → update → verify"
+        },
+        {
+          "step": "Tool Use",
+          "action": "Look up order",
+          "found": true
+        },
+        {
+          "step": "Eligibility",
+          "days_since_delivery": 13
+        }
+      ]
+    }
+  ],
+  "final_statuses": {
+    "5821": "Return Approved",
+    "5822": "Return Approved",
+    "5823": "Delivered"
+  }
+}
