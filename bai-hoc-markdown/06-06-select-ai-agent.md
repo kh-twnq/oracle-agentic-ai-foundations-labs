@@ -10,6 +10,10 @@ Trong bài trả hàng, tool đọc đơn, workflow kiểm tra điều kiện tr
 
 Trong workspace cục bộ, bài mô phỏng nằm ở `customer_return_local.py` và kết quả kiểm tra ở `results/customer-return-local.json`.
 
+![Select AI Agent lập kế hoạch, dùng NL2SQL kiểm tra order 5821, gọi PL/SQL cập nhật rồi xác nhận kết quả.](images/06-06-select-ai-return-flow.png)
+
+*Customer Return Agent đọc dữ liệu, kiểm tra chính sách, cập nhật trạng thái rồi xác nhận. Đối chiếu Student Guide, trang 230–234.*
+
 ## AI profile, tool types và workflow trả hàng
 
 | Lớp | Công việc trong một lượt chạy |

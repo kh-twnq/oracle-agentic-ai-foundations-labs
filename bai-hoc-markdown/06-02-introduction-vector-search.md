@@ -8,6 +8,10 @@ Tokenizer tách văn bản thành token. Mô hình embedding xử lý chuỗi to
 
 Oracle AI Database lưu vector cùng các cột thông thường. `VECTOR_DISTANCE` dùng trong SQL để xếp hạng theo độ gần, còn `WHERE` giới hạn theo giá, danh mục hoặc siêu dữ liệu khác. Kết quả semantic search có thể trở thành đoạn ngữ cảnh trong RAG.
 
+![Ingestion encode documents rồi lưu vectors. Query time encode câu hỏi rồi xếp hạng dựa trên khoảng cách tới vectors đã lưu.](images/06-02-semantic-search-embeddings.png)
+
+*Corpus và query được encode vào cùng embedding space để xếp hạng. Đối chiếu Student Guide, trang 202–205.*
+
 ## Tokenization, embedding space và SQL-native retrieval
 
 Một **vector** là dãy số có thứ tự. Một **embedding** là vector do model tạo để biểu diễn một input. Tokenizer có thể tách một từ thành nhiều **subword tokens**. Model xử lý các token trước khi tạo vector có số chiều cố định cho mỗi input. Cùng một chiều dài vector vẫn có thể là hai không gian embedding khác nhau.

@@ -11,6 +11,10 @@ MCP phân biệt **tools** để thực thi hành động, **resources** để �
 
 Thông điệp dùng JSON-RPC 2.0. Yêu cầu cần phản hồi có `id` để ghép cặp với kết quả hoặc lỗi. Notification không mang `id`. Với stdio, host thường khởi chạy một tiến trình con và trao đổi qua stdin/stdout. Với Streamable HTTP, client kết nối tới endpoint HTTP và phản hồi có thể truyền theo luồng.
 
+![MCP lifecycle gồm exchange capabilities, tools/list, tools/call và đóng transport.](images/03-02-mcp-lifecycle.png)
+
+*MCP session đi từ initialize đến discovery, operation và shutdown. Đối chiếu Student Guide, trang 98–103.*
+
 ## JSON-RPC request và result
 
 Trong MCP, model thường chọn **tool**, ứng dụng quyết định **resources** nào đưa vào context, còn **prompts** có thể được người dùng chọn từ giao diện host. Đây là cách phân vai trong bài, còn từng host có cách trình bày riêng.

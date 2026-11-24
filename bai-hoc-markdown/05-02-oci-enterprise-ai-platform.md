@@ -8,6 +8,10 @@ Tài liệu chia nền tảng thành **Models** cho truy cập mô hình, **Agen
 - **On-demand** dùng hạ tầng dùng chung và phù hợp với tải thay đổi. **Dedicated AI Cluster** cấp hạ tầng riêng, phù hợp khi cần cách ly, độ trễ ổn định hoặc có yêu cầu hosting riêng của mô hình. Chi phí và khả năng dùng tùy cấu hình dịch vụ.
 - **Governance** áp dụng kiểm soát theo các lớp. Private Endpoint và Zero Trust Packet Routing (ZPR) phục vụ ranh giới mạng. IAM xác định ai được dùng hoặc quản lý tài nguyên. Guardrails kiểm tra các vấn đề như nội dung vi phạm, prompt injection và dữ liệu cá nhân.
 
+![Embed chuyển query thành vector, Retrieve chọn chunks, Rerank sắp lại kết quả, Chat tạo câu trả lời.](images/05-02-oci-model-roles.png)
+
+*Trong flow RAG, Embed hỗ trợ retrieval, Rerank sắp xếp ứng viên rồi Chat dùng context để trả lời. Đối chiếu Student Guide, trang 173–175.*
+
 ## Serving modes và governance trong guide
 
 | Tiêu chí | On-demand | Dedicated AI Cluster |

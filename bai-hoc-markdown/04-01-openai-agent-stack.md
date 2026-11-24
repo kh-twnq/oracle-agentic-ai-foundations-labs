@@ -10,6 +10,10 @@ Mô-đun 04 · Bài 01 · Oracle Student Guide, trang 125–129 · [Mục lục]
 | Cần tự quy định các trạng thái, lưu đối số và duyệt từng bước gọi hàm | Quản lý vòng lặp với Responses API. |
 | Có nhiều agent chuyên trách, nhiều lời gọi và cần trace tập trung | Định nghĩa các agent và chạy bằng Agents SDK. |
 
+![Ba lớp gồm Application cho business rules, Agents SDK để điều phối khi cần và Responses API để gọi model.](images/04-01-openai-agent-stack.png)
+
+*Application có thể dùng Agents SDK cho orchestration hoặc gọi trực tiếp Responses API. Đối chiếu Student Guide, trang 127–129.*
+
 ## Ranh giới giữa application, SDK và API
 
 Application giữ user interface, xác thực và business rules. Responses API nhận input, mô hình và cấu hình tool, rồi trả output theo cấu trúc để caller xử lý. Agents SDK thêm các khái niệm như Agent, Runner, handoff và guardrail trên lớp API này.

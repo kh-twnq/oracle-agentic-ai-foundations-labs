@@ -2,6 +2,8 @@
 
 Bộ ghi chú gồm 32 bài thuộc 6 mô-đun của workshop. Nội dung giải thích bằng tiếng Việt và giữ thuật ngữ như Agent Execution Loop, tool calling, handoff, guardrail và Vector Search, cùng tên API, method và product. Dùng số trang để đối chiếu slide và speaker notes trong Student Guide. Các bài lab có liên kết tới mã công khai tương ứng của Oracle University.
 
+Các bài có 27 sơ đồ minh họa được vẽ lại từ phần kiến trúc và workflow của guide. Nhãn trong hình giữ thuật ngữ tiếng Anh. Mỗi hình có chú thích và số trang để đối chiếu.
+
 [Oracle Agentic AI Foundations: Hands-on Workshop (Student Guide), D1114464GC10](https://mylearn.oracle.com/ou/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course)
 
 [Mã lab công khai của Oracle University](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations)

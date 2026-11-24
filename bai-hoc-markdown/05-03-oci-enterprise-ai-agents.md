@@ -8,6 +8,10 @@ Với **Hosted Agentic Apps**, bạn đóng gói ứng dụng và phần điều
 
 Trong cả hai cách, nhóm phát triển vẫn xác định chỉ dẫn, tool được phép gọi, nguồn tri thức và kết quả nghiệp vụ. Nhà cung cấp runtime xử lý phần hạ tầng tương ứng. OCI Logging, Monitoring và Audit phục vụ theo dõi và kiểm toán theo cấu hình triển khai.
 
+![Managed API đi từ application đến OCI Responses API và runtime. Hosted App đi từ client qua endpoint đến container.](images/05-03-oci-deployment-paths.png)
+
+*OCI Responses API nhận model request, còn OCI hosted app triển khai container chứa agent logic. Đối chiếu Student Guide, trang 179–181.*
+
 ## Managed API và Hosted Agentic Apps
 
 | Điểm cần xác định | Managed API | Hosted Agentic Apps |

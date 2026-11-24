@@ -8,6 +8,10 @@ LangChain cung cấp giao diện chung cho nhiều chat model và các thành ph
 - **Prompt.** `PromptTemplate` điền biến vào chuỗi văn bản. `ChatPromptTemplate` giữ vai trò của tin nhắn, ví dụ system và user. Có thể thêm vài ví dụ để định hướng định dạng cần trả về.
 - **Chain.** LCEL nối các bước như `prompt | model | StrOutputParser()`. `invoke` nhận các biến đầu vào, còn parser lấy phần văn bản từ kết quả mô hình.
 
+![ChatPromptTemplate tạo message từ input, chat model tạo response và StrOutputParser trả text.](images/02-01-lcel-chain.png)
+
+*Một LCEL chain nối prompt, chat model và output parser. Đối chiếu Student Guide, trang 59–62.*
+
 ## Chọn model, prompt và parser
 
 Provider integrations ánh xạ model khác nhau vào một giao diện chung. Trước khi đổi provider, kiểm tra tool calling, kiểu đầu vào, context window và cách trả structured output. Template dạng text phù hợp với một chuỗi đã điền biến, còn chat template phù hợp khi cần giữ system message, user message và các ví dụ dạng hội thoại. **Few-shot prompting** đưa một số cặp input/output mẫu vào prompt để làm rõ format.

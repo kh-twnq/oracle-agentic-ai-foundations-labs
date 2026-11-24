@@ -11,6 +11,10 @@ Bài thực hành dùng LangChain cho một agent toán học. Môi trường g�
 
 Hãy thử tính tổng của 27 và 45 trong một lần gọi. Với bài nhân 18 với 5 rồi chia cho 6, kiểm tra bước chia dùng kết quả 90 để ra 15. Với bài căn bậc hai của diện tích hình chữ nhật 9 × 4, kết quả trung gian là 36 và kết quả cuối là 6. Thử thêm phép chia cho 0 để xem cách tool báo lỗi.
 
+![Agent lấy yêu cầu tính 15 nhân 8 rồi chia 3, gọi multiply ra 120, gọi divide ra 40 và trả kết quả.](images/01-04-arithmetic-tools.png)
+
+*Tool result của phép nhân được đưa vào phép chia. Đối chiếu Student Guide, trang 42–45.*
+
 ## Tool schema và ba kịch bản trong guide
 
 Trong Python, **decorator** đăng ký hàm với framework. **Type hints** cho đối số giúp dựng input schema. **Docstring** mô tả khi nào nên gọi tool, còn **return annotation** mô tả kiểu dữ liệu dự kiến. Một helper kiểu `run_agent` có thể dùng chung để gửi câu hỏi và in final message sau khi `agent.invoke` trả về.

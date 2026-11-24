@@ -8,6 +8,10 @@ Tool `get_summarized_usage` nhận tenancy, thời gian bắt đầu và kết t
 
 Có thể gọi server từ client trực tiếp để kiểm tra schema và dữ liệu trước khi thêm mô hình. Bài lab agent diễn giải yêu cầu ngôn ngữ tự nhiên thành tham số rồi tổng hợp kết quả. Workspace có hai báo cáo trên dữ liệu giả lập để đối chiếu. Truy vấn thật cần hồ sơ OCI có quyền đọc dữ liệu chi phí của tenancy.
 
+![MCP client gửi request qua stdio tới OCI Usage MCP server, server dùng OCI profile để gọi OCI Usage API.](images/03-04-oci-usage-mcp-flow.png)
+
+*Client dùng stdio, còn OCI Usage MCP server gọi OCI Usage API qua HTTPS. Đối chiếu Student Guide, trang 117–120.*
+
 ## Đối chiếu từng chặng của bài thực hành
 
 Math MCP server thực thi Python trên cùng máy. OCI Usage MCP server cũng có thể chạy cục bộ qua `uvx`, nhưng phần thực thi downstream dùng OCI SDK hoặc OCI Usage REST API. Client của hai bài đều dùng stdio và cùng cơ chế discovery/call. Sự khác biệt nằm ở backend, credentials và quyền của dữ liệu.

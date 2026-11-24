@@ -9,6 +9,10 @@ Bài học mở rộng từ agent chạy cục bộ sang một dịch vụ HTTP 
 3. Tạo Generative AI Application và cấu hình xác thực, mạng, tài nguyên, lưu trữ và scaling.
 4. Tạo deployment từ image đã chọn và gọi HTTP endpoint bằng danh tính được phép.
 
+![Sáu bước deploy gồm Build, Package, Upload, Configure, Deploy và Invoke.](images/05-06-oci-hosted-app-deploy.png)
+
+*Chuỗi triển khai Hosted Agentic App từ local build đến endpoint. Đối chiếu Student Guide, trang 193–194.*
+
 ## Các mốc từ local development đến endpoint
 
 Guide trình bày chuỗi **build → package → upload → configure → deploy → invoke**. Ở ba bước đầu, image cần gom đúng agent code và runtime dependencies rồi được lưu tại OCIR. Ở ba bước sau, tạo cấu hình ứng dụng, chọn image để deploy và xác nhận endpoint thực thi được agent theo đúng identity.

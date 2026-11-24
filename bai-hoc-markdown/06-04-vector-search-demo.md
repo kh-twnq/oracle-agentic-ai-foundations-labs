@@ -18,6 +18,10 @@ Workspace có kết quả chạy SQLite với vector thật và đối chiếu b
 
 Trong workspace cục bộ, script chạy thử là `vector_search_local.py` và kết quả đối chiếu nằm ở `results/vector-search-oracle.json`.
 
+![Encode truy vấn đồ thể thao dưới nước, lọc giá dưới 100, xếp hạng bằng cosine distance rồi trả top 5.](images/06-04-vector-relational-query.png)
+
+*Truy vấn demo kết hợp price predicate với xếp hạng theo cosine distance. Đối chiếu Student Guide, trang 217–222.*
+
 ## Setup, data ingestion và hai truy vấn trong guide
 
 1. Cài `oracledb` và `sentence-transformers`, rồi kết nối schema lab trên Oracle AI Database có hỗ trợ `VECTOR`. Tạo bảng sản phẩm với cột `VECTOR(384, FLOAT32)` cho model demo.

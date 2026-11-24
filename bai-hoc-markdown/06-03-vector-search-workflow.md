@@ -10,6 +10,10 @@ Mô-đun 06 · Bài 03 · Oracle Student Guide, trang 206–211 · [Mục lục]
 
 Cosine đo độ khác hướng, Euclidean đo khoảng cách đường thẳng, Manhattan cộng chênh lệch tuyệt đối theo chiều, và dot product phụ thuộc cả độ lớn lẫn hướng. Chọn thước đo theo hướng dẫn của mô hình và giữ nhất quán giữa truy vấn và chỉ mục.
 
+![Vector Search workflow gồm trích text, chunking, embedding, lưu và index vectors, sau đó search và RAG.](images/06-03-vector-search-pipeline.png)
+
+*Ingestion tạo text chunks và embeddings, rồi retrieval có thể cấp context cho RAG. Đối chiếu Student Guide, trang 206–211.*
+
 ## In-database và external embeddings
 
 Bài học đưa hai hướng tạo embeddings. Mô hình ONNX có thể được nạp bằng `DBMS_VECTOR.LOAD_ONNX_MODEL` rồi gọi qua `VECTOR_EMBEDDING`. Hướng external dùng provider bên ngoài, SDK hoặc tiện ích `DBMS_VECTOR_CHAIN` với cấu hình provider/model. Với tài liệu dài, chuỗi text extraction, chunking và embedding có thể kết hợp trong pipeline ingest. Mỗi chunk cần giữ document ID và vị trí để truy ngược nguồn.

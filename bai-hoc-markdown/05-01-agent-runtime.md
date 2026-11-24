@@ -14,6 +14,10 @@ Framework mô tả cách agent hoạt động. Để chạy được cho ngườ
 | Độ tin cậy | Cân bằng tải, mở rộng, xử lý thành phần bị lỗi. |
 | Theo dõi | Thu thập log, metric và trace của từng lượt chạy. |
 
+![Application gửi request, runtime quản lý state, retry và observability, agent logic quyết định hành động và kết quả.](images/05-01-agent-runtime-stack.png)
+
+*Agent runtime nằm giữa application và agent logic. Đối chiếu Student Guide, trang 165–171.*
+
 ## Self-managed và managed runtime
 
 Ba lớp của hệ thống gồm **user/application**, **runtime** và **agent logic**. Agent code có thể giữ nguyên khi đổi cách triển khai. Phần runtime cần quyết định tiếp nhận kết nối ở đâu, lưu state thế nào, dùng credentials nào cho integration và theo dõi lỗi thế nào khi lưu lượng tăng.

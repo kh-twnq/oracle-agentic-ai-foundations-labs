@@ -8,6 +8,10 @@ Dùng `@function_tool` cho hàm Python. Type hint và docstring cung cấp schem
 
 Cùng ví dụ tính toán, bài LangChain đăng ký bằng `@tool` rồi gọi `agent.invoke`, còn Agents SDK dùng `@function_tool` và `Runner`. Trong cả hai trường hợp, kết quả của phép tính đầu có thể trở thành đầu vào của phép thứ hai.
 
+![Tool list của agent có thể khai báo hosted tools, hàm Python có function_tool, hoặc specialist agent làm tool.](images/04-04-agents-sdk-tool-types.png)
+
+*Agents SDK hỗ trợ hosted tools, function tools và agents as tools. Đối chiếu Student Guide, trang 142–148.*
+
 ## Function tool từ khai báo đến kết quả
 
 Các **hosted tools** trong SDK được gắn vào agent, ví dụ `WebSearchTool` hoặc `FileSearchTool`. **Function tools** được đăng ký từ Python, còn **agents as tools** cung cấp một chuyên gia như một tool có tên và mô tả riêng.

@@ -8,6 +8,10 @@ LLM xử lý ngôn ngữ và đề xuất bước tiếp theo. Khi được đ�
 
 **Ví dụ.** Khi tìm chuyến bay, agent có thể hỏi lại ngày khởi hành, tra lịch bay rồi so sánh kết quả. Nếu API trả về danh sách trống, bước sau có thể là hỏi người dùng có thể đổi ngày hay không. Một chatbot chỉ có kiến thức từ mô hình sẽ thiếu dữ liệu lịch bay tại thời điểm hỏi.
 
+![Agent Execution Loop đi qua Observe, Reason, Act và Update state, rồi lặp hoặc trả final answer.](images/01-01-agent-loop.png)
+
+*Agent loop cập nhật state sau mỗi tool call. Đối chiếu Student Guide, trang 15–16.*
+
 ## Agent loop và state
 
 Một LLM-based agent có bốn đặc điểm trong phạm vi bài này. Nó làm việc theo mục tiêu (**goal-directed**), tự chọn hành động trong phạm vi được cấu hình (**autonomy**), sử dụng **tools** và có thể lặp nhiều lượt. Tính tự chủ nằm ở việc chọn bước tiếp theo. Quyền đọc, ghi và thực hiện giao dịch vẫn do ứng dụng cấp.

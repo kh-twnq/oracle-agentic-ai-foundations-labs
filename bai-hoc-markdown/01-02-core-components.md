@@ -12,6 +12,10 @@ Mô-đun 01 · Bài 02 · Oracle Student Guide, trang 17–21 · [Mục lục](R
 
 Runtime có thể giữ lịch sử của lượt làm việc hiện tại và truy xuất dữ liệu lưu dài hạn khi cần. Cấu hình quyền và điều kiện dừng thuộc về ứng dụng. Chẳng hạn, nếu công cụ hết thời gian chờ, runtime có thể thử lại một thao tác đọc hoặc trả trạng thái lỗi để người dùng quyết định.
 
+![Orchestration kết nối LLM để quyết định, tool registry để thực thi và state store để giữ kết quả.](images/01-02-agent-components.png)
+
+*Orchestration liên kết LLM, tool registry và state. Đối chiếu Student Guide, trang 18–21.*
+
 ## Chọn model và xác định trách nhiệm của runtime
 
 Model cần tuân theo instructions, xử lý đủ context và sinh tool call khớp schema. Tác vụ phân loại có thể dùng model nhỏ, còn tác vụ cần đọc nhiều nguồn hoặc lập kế hoạch nhiều bước có thể dùng model có khả năng reasoning mạnh hơn. Hãy đo cả latency của lượt chạy vì cùng một yêu cầu có thể gọi model nhiều lần.

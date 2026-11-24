@@ -6,6 +6,10 @@ Trong mẫu handoff, agent phân luồng tiếp nhận yêu cầu rồi chuyển
 
 Trong mẫu manager, agent trung tâm gọi các agent chuyên trách làm tool qua `as_tool`. Manager nhận kết quả rồi tổng hợp phản hồi. Handoff phù hợp khi một chuyên gia phụ trách phần còn lại của lượt chạy. Manager phù hợp khi cần hợp nhất nội dung từ nhiều chuyên gia.
 
+![Handoff đi từ Triage Agent đến specialist rồi final answer. Manager gọi specialist làm tool và tự tổng hợp final answer.](images/04-05-handoff-vs-manager.png)
+
+*Handoff chuyển lượt chạy cho specialist, còn manager nhận kết quả để tổng hợp. Đối chiếu Student Guide, trang 149–152.*
+
 ## Handoff description và câu hỏi định tuyến
 
 Guide dùng một **Triage Agent** với các **specialist agents** cho môn học. Mỗi specialist nhận instructions riêng về cách trả lời. `handoff_description` giúp Triage Agent chọn đúng đích. Thiết lập `handoffs` của triage agent quy định các agent được phép nhận quyền xử lý. Kiểm tra câu hỏi nằm ngoài mọi nhóm để thấy hành vi fallback mà triage instructions đang quy định.

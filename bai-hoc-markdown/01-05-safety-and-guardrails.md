@@ -12,6 +12,10 @@ Agent có thể gặp prompt injection trong dữ liệu lấy về, yêu cầu 
 | Đầu ra | Kiểm tra thông tin cá nhân, bí mật cần che và căn cứ của kết luận. |
 | Giám sát | Ghi tên tool, kết quả, lỗi và chi phí. Che dữ liệu nhạy cảm trong trace. |
 
+![Năm lớp defense in depth gồm input validation, model constraints, tool authorization, output checks và monitoring.](images/01-05-guardrail-layers.png)
+
+*Guardrails áp dụng ở input, model, tool, output và monitoring. Đối chiếu Student Guide, trang 49–52.*
+
 ## Threat model và các ví dụ trong guide
 
 Guide dẫn hai sự cố để minh họa rủi ro của agent có quyền đọc dữ liệu hoặc ghi memory. Trường hợp Slack AI minh họa **indirect prompt injection** qua nội dung được truy xuất và rủi ro khi thông tin từ vùng dữ liệu hạn chế xuất hiện ở output. Trường hợp `spAIware` minh họa **memory poisoning** kéo dài sang phiên sau. Các điểm kiểm soát tương ứng gồm xác thực phạm vi truy xuất, kiểm tra output, ghi nhận nguồn và kiểm soát dữ liệu được đưa vào long-term memory.

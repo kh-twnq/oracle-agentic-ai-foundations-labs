@@ -8,6 +8,10 @@ Bài lab dùng agent kiểm tra nhỏ với kiểu dữ liệu Pydantic có trư
 
 Trace hiển thị các lần gọi mô hình, tool, handoff và kiểm tra, giúp tìm lỗi định tuyến hoặc bước gây chậm. Khi ghi trace, che tham số nhạy cảm và nội dung cần giới hạn truy cập.
 
+![Blocking input guardrail kiểm tra yêu cầu trước agent run, output guardrail kiểm tra kết quả và application xử lý tripwire.](images/04-06-sdk-guardrails.png)
+
+*Luồng minh họa input guardrail ở chế độ chặn trước khi agent chạy. Đối chiếu Student Guide, trang 153–156.*
+
 ## Guardrail result, tripwire và trace spans
 
 Bài lab tạo model kiểm tra chủ đề với một trường Boolean. Hàm guardrail đọc kết quả này để đặt tripwire. Một kiểm tra deterministic theo schema phù hợp với yêu cầu như định dạng ID. Một checker agent có thể hỗ trợ phân loại chủ đề. Test cả trường hợp pass và reject để kiểm tra phản hồi của ứng dụng.

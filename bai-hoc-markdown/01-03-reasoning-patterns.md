@@ -8,6 +8,10 @@ Mô-đun 01 · Bài 03 · Oracle Student Guide, trang 22–27 · [Mục lục](R
 
 **Tree-of-Thoughts (ToT)** xem xét nhiều hướng giải, đánh giá các phương án trung gian rồi chọn nhánh để tiếp tục. Duyệt thêm nhánh làm tăng số lần đánh giá nên cần cân đối với thời gian và chi phí.
 
+![CoT theo chuỗi bước, ReAct dùng tool và observation, ToT đánh giá nhiều nhánh.](images/01-03-reasoning-patterns.png)
+
+*CoT, ReAct và ToT tổ chức bước trung gian theo ba cách. Đối chiếu Student Guide, trang 23–27.*
+
 ## Đọc một ReAct trace
 
 Hãy theo dõi ba sự kiện có thể kiểm chứng. Agent chọn tool nào, tool trả dữ liệu nào và agent quyết định tiếp tục hay dừng. Nếu tra cứu metadata cho một bộ phim, tool có thể trả tên đạo diễn và năm phát hành trong cùng một lượt. Nếu kết quả có hai phim trùng tên, agent có thể hỏi phiên bản hoặc thu hẹp truy vấn trước khi trả lời.

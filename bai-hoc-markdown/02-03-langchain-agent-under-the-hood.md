@@ -9,6 +9,10 @@ Mô-đun 02 · Bài 03 · Oracle Student Guide, trang 73–88 · [Mục lục](R
 
 Trong bài toán nhiều bước, có ba phản hồi từ mô hình khi lần lượt yêu cầu phép nhân, yêu cầu phép chia và kết luận. Số lần gọi mô hình có thể khác số lần chạy hàm. Khi điều tra lỗi, xem schema, đối số thực tế, kết quả tool và tin nhắn cuối. Vị trí đầu tiên chúng sai khác với mong đợi thường chỉ ra lớp cần sửa.
 
+![Sequence diagram giữa LangChain runtime, chat model và Python tools, từ multiply và divide đến final answer.](images/02-03-langchain-tool-trace.png)
+
+*LangChain runtime chuyển tool call thành lời gọi Python và cập nhật message history. Đối chiếu Student Guide, trang 74–88.*
+
 ## Đối chiếu các bước ở trang 74–85
 
 | Trang | Dấu vết có thể kiểm tra |

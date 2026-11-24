@@ -8,6 +8,10 @@ Private Agent Factory là công cụ trực quan để kết nối mô hình, ng
 - **Data Analysis Agent** phục vụ dữ liệu có cấu trúc. Nó chuyển câu hỏi thành SQL dựa trên các bảng hoặc view có thể truy cập và có thể hiển thị biểu đồ.
 - **Agent Builder** dùng các nút trực quan để phối hợp bước gọi mô hình, tool, nhánh điều kiện và agent chuyên trách. Các bước mở rộng có thể gồm thành phần Python và công cụ MCP.
 
+![Ba lựa chọn của Private Agent Factory là Knowledge Agent cho tài liệu, Data Analysis Agent cho SQL và Agent Builder cho workflow riêng.](images/06-05-private-agent-factory.png)
+
+*Private Agent Factory phân biệt document retrieval, data analysis và custom workflow. Đối chiếu Student Guide, trang 224–228.*
+
 ## Request flow và ba cách xây agent
 
 Guide mô tả **Business User → Agent Factory → LLM provider và Oracle Database**. Tùy workflow, Agent Factory có thể lấy tài liệu, chạy query hoặc gọi tool rồi đưa kết quả về model. Tài liệu minh họa chạy Agent Factory bằng container với Podman và kết nối đến Oracle AI Database 26ai.

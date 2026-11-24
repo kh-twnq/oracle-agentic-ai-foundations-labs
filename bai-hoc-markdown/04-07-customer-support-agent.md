@@ -6,6 +6,10 @@ Hệ thống có một agent tiếp nhận yêu cầu và ba agent chuyên trác
 
 Với câu hỏi về mã đơn `ORD-001`, agent tiếp nhận chuyển yêu cầu đến chuyên gia trạng thái. Chuyên gia yêu cầu tool tra cứu. Runner cung cấp dữ liệu trả về để chuyên gia viết câu trả lời. Trace giúp thấy thời gian dành cho việc kiểm tra đầu vào, định tuyến, gọi tool và tạo kết quả.
 
+![Sau input guardrail, Triage Agent phân luồng đến specialist trạng thái đơn, hoàn tiền hoặc FAQ.](images/04-07-support-routing.png)
+
+*Triage Agent dùng handoff để chuyển yêu cầu sang Order Status, Refunds hoặc FAQ. Đối chiếu Student Guide, trang 158–161.*
+
 ## Đọc trace của yêu cầu tra đơn hàng
 
 | Pha | Dữ liệu và quyết định cần kiểm tra |

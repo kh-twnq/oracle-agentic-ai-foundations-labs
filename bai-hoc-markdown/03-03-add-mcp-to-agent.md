@@ -8,6 +8,10 @@ Client chạy bất đồng bộ để khám phá bằng `await client.get_tools
 
 Việc tách server làm tăng một lớp giao tiếp và thêm lỗi tiến trình cần xử lý. Lợi ích rõ hơn khi nhiều ứng dụng chia sẻ công cụ, công cụ cần được nâng cấp độc lập hoặc năng lực được cung cấp bởi một dịch vụ khác.
 
+![Local tool chạy qua registry trong ứng dụng. MCP tool chạy ở FastMCP server sau lời gọi từ MCP client.](images/03-03-local-vs-mcp-tools.png)
+
+*MCP đưa tool implementation sang process server. Đối chiếu Student Guide, trang 105–114.*
+
 ## Phần server và phần host
 
 Trong server `FastMCP`, `@mcp.tool()` biến một hàm có type hints và docstring thành tool có thể được khám phá. Entry point dùng `mcp.run(transport="stdio")`. Client lấy đường dẫn server tương đối với script client, khởi chạy tiến trình và lấy tools từ adapter trước khi gọi agent bất đồng bộ.
