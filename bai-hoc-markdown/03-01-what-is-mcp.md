@@ -10,4 +10,10 @@ Model Context Protocol (MCP) chuẩn hóa cách một ứng dụng AI khám phá
 
 Mô hình nhận mô tả công cụ để đề xuất lời gọi. Host và client chịu trách nhiệm chuyển đề xuất đó thành yêu cầu MCP. Việc công bố một tool qua MCP vẫn cần đi kèm kiểm tra quyền ở nơi dữ liệu và hành động được thực thi.
 
+## Integration cost và trust boundary
+
+Nếu có ba host và bốn dịch vụ, mô hình tích hợp riêng từng cặp có thể đòi 12 adapter. Một protocol chung minh họa mô hình ba client integration cộng bốn server integration. Con số này mô tả việc triển khai giao thức. Mỗi hệ thống vẫn cần cấu hình kết nối, auth và policy phù hợp.
+
+Host quyết định dữ liệu nào được cấp cho model và tool nào xuất hiện trong lượt chạy. Mỗi client quản lý phiên với một server và thực hiện protocol negotiation. MCP server quản lý implementation và giới hạn hành động trong hệ thống mà nó bọc. Ví dụ, server chi phí cloud có thể giới hạn quyền đọc tập báo cáo mà profile OCI được phép thấy.
+
 **Tự kiểm tra.** Trong một ứng dụng có server tài liệu và server chi phí cloud, vẽ vị trí host, các client và các server.

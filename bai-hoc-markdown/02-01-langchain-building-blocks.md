@@ -4,9 +4,15 @@ Mô-đun 02 · Bài 01 · Oracle Student Guide, trang 57–62 · [Mục lục](R
 
 LangChain cung cấp giao diện chung cho nhiều chat model và các thành phần như prompt template, parser và tool. LangGraph mô tả luồng chạy bằng các nút, điều kiện rẽ nhánh và trạng thái. LangSmith hỗ trợ trace, đánh giá và gỡ lỗi. Các gói tích hợp kết nối đến từng nhà cung cấp hoặc nguồn dữ liệu.
 
-- **Model.** `init_chat_model` chọn mô hình thông qua giao diện chung. Khả năng gọi công cụ, đầu vào đa phương thức và cấu hình vẫn phụ thuộc mô hình.
+- **Model.** `init_chat_model` chọn mô hình thông qua giao diện chung. Khả năng gọi tool, đầu vào đa phương thức và cấu hình vẫn phụ thuộc mô hình.
 - **Prompt.** `PromptTemplate` điền biến vào chuỗi văn bản. `ChatPromptTemplate` giữ vai trò của tin nhắn, ví dụ system và user. Có thể thêm vài ví dụ để định hướng định dạng cần trả về.
 - **Chain.** LCEL nối các bước như `prompt | model | StrOutputParser()`. `invoke` nhận các biến đầu vào, còn parser lấy phần văn bản từ kết quả mô hình.
+
+## Chọn model, prompt và parser
+
+Provider integrations ánh xạ model khác nhau vào một giao diện chung. Trước khi đổi provider, kiểm tra tool calling, kiểu đầu vào, context window và cách trả structured output. Template dạng text phù hợp với một chuỗi đã điền biến, còn chat template phù hợp khi cần giữ system message, user message và các ví dụ dạng hội thoại. **Few-shot prompting** đưa một số cặp input/output mẫu vào prompt để làm rõ format.
+
+Một **chain** bằng LCEL có thứ tự bước được xác định ở lúc viết code. `StrOutputParser()` giúp ứng dụng nhận kết quả dạng chuỗi. Agent dùng cùng model interface nhưng có thể chọn tool và lặp thêm lần gọi dựa trên kết quả.
 
 **Thực hành.** Tạo template nhận tên chủ đề, sau đó gọi cùng chain với hai chủ đề khác nhau. Quan sát vai trò của template, mô hình và parser trong mỗi lần chạy.
 

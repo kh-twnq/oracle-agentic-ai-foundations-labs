@@ -8,6 +8,14 @@ Tool `get_summarized_usage` nhận tenancy, thời gian bắt đầu và kết t
 
 Có thể gọi server từ client trực tiếp để kiểm tra schema và dữ liệu trước khi thêm mô hình. Bài lab agent diễn giải yêu cầu ngôn ngữ tự nhiên thành tham số rồi tổng hợp kết quả. Workspace có hai báo cáo trên dữ liệu giả lập để đối chiếu. Truy vấn thật cần hồ sơ OCI có quyền đọc dữ liệu chi phí của tenancy.
 
+## Đối chiếu từng chặng của bài thực hành
+
+Math MCP server thực thi Python trên cùng máy. OCI Usage MCP server cũng có thể chạy cục bộ qua `uvx`, nhưng phần thực thi downstream dùng OCI SDK hoặc OCI Usage REST API. Client của hai bài đều dùng stdio và cùng cơ chế discovery/call. Sự khác biệt nằm ở backend, credentials và quyền của dữ liệu.
+
+Bắt đầu từ kiểm tra OCI profile và tenancy. Sau khi mở `ClientSession`, gọi initialize, đọc danh sách tools và gọi `get_summarized_usage` với `tenant_id`, `start_time`, `end_time`, `granularity`, `group_by` và `query_type` theo schema trả về. Lab trực tiếp lấy bảy ngày gần nhất, dùng daily granularity, group by service và xuất bảng pivot cùng CSV. So sánh tổng và nhóm dịch vụ với **Cost Analysis** trong đúng khoảng báo cáo. Kiểm tra dữ liệu trực tiếp trước khi đọc phần diễn giải do model tạo.
+
+`uvx` dùng môi trường tách biệt và có thể nạp package từ cache. Tham số OCI profile cần được truyền cho process server; agent host cũng cần biết tiến trình nào mang quyền truy vấn tenancy.
+
 [Client OCI Usage](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/Real%20World%20MCP/01_oci_usage_mcp_client.py) · [Agent OCI Usage](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/Real%20World%20MCP/02_oci_usage_mcp_agent.py)
 
 Trong workspace cục bộ, báo cáo mẫu nằm ở `results/oci-usage-agent-synthetic.csv`.
