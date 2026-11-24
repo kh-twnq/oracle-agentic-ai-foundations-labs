@@ -1,6 +1,6 @@
 # Oracle Agentic AI Foundations · Ghi chú ôn tập
 
-Sáu bản tóm tắt tiếng Việt dựa trên các slide **What You’ve Learned** ở cuối mỗi mô-đun. Tên product, API, method và thuật ngữ kỹ thuật được giữ bằng tiếng Anh.
+Mỗi mục đánh số tương ứng với một bullet trên slide **What You’ve Learned**, theo thứ tự trình bày của slide. Phần diễn giải bằng tiếng Việt giữ nguyên tên product, API, method và thuật ngữ kỹ thuật.
 
 | Mô-đun | Trang slide |
 | --- | --- |
