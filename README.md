@@ -4,7 +4,7 @@ Tài liệu học và lab thực hành theo Oracle Agentic AI Foundations Worksh
 
 | Thư mục | Nội dung |
 | --- | --- |
-| [study-notes/](study-notes/README.md) | 32 bài Markdown tiếng Việt và 27 sơ đồ, có số trang để đối chiếu với Student Guide. |
+| [study-notes/](study-notes/README.md) | 6 bản tóm tắt tiếng Việt, mỗi bản có một sơ đồ và số trang của slide What You’ve Learned. |
 | [labs/](labs/README.md) | Hướng dẫn chạy, local fixtures, Oracle AI Vector Search, Customer Return Agent và kết quả mẫu. |
 | [Mã lab Oracle University](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations) | Các ví dụ LangChain, MCP, OpenAI và OCI gốc. Git submodule lấy đúng commit dùng trong workshop. |
 
