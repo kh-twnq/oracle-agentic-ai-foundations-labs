@@ -1,6 +1,6 @@
 # Oracle Agentic AI Foundations · Technical Knowledge Base
 
-An English-language reference for AI agent architecture, orchestration, and data access. The six modules cover core concepts, execution and data boundaries, and the trade-offs that affect system design.
+An English-language reference for AI agent architecture, orchestration, and data access. Each Module follows the topics and order of its Student Guide agenda.
 
 | Module | Key concepts | Student Guide pages |
 | --- | --- | --- |

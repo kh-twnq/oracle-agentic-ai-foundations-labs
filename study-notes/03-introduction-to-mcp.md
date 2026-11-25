@@ -2,48 +2,66 @@
 
 Module 3 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 91–121 · [Index](README.md)
 
-## The MCP Integration Model
+## Agenda
 
-**Model Context Protocol (MCP)** defines a shared interface through which AI applications access tools, resources, and prompts. With `N` applications and `M` services, a separate adapter for every pair can require up to `N × M` integrations. A common protocol gives each application and service a shared integration point, represented by the `N + M` model. (pp. 91–96)
+1. [What is Model Context Protocol?](#1-what-is-model-context-protocol)
+2. [MCP Core Components](#2-mcp-core-components)
+3. [Add MCP Server to your first Agent](#3-add-mcp-server-to-your-first-agent)
+4. [Real World MCP Walkthrough](#4-real-world-mcp-walkthrough)
 
-| Component | Responsibility |
+Student Guide agenda, p. 92.
+
+## 1. What is Model Context Protocol?
+
+**Model Context Protocol (MCP) is an open standard that connects AI applications to external tools, data sources, and systems.** It lets a compatible client communicate with a compatible server through a shared interface. Anthropic introduced MCP in November 2024. The project is part of the Linux Foundation's Agentic AI Foundation. (pp. 93–94)
+
+### The integration problem
+
+| Integration model | Cost for N applications and M services | 3 applications and 4 services |
+| --- | --- | --- |
+| Pairwise connectors | Up to `N × M` adapters, one per pair. | 12 adapters |
+| Shared MCP protocol | `N + M` protocol integrations, one per application or service. | 7 integrations |
+
+The count describes integration implementations. A host may still maintain a separate runtime connection to each server it uses. (pp. 95–96)
+
+## 2. MCP Core Components
+
+| Role | Responsibility |
 | --- | --- |
-| **Host** | Runs the AI application, coordinates model interactions, and creates MCP clients. |
-| **MCP client** | Maintains the connection to one server and exchanges protocol messages. |
-| **MCP server** | Publishes capabilities and executes the tools it provides. It can run locally or remotely. |
+| **Host** | Runs the AI application, coordinates the model, and creates MCP clients. |
+| **MCP client** | Maintains a connection with one server and exchanges protocol messages. |
+| **MCP server** | Publishes capabilities and executes the tools it provides. |
 
-| Primitive | Purpose |
+A server can expose **Tools** for actions, **Resources** for URI-addressed data, and **Prompts** for reusable templates. The host decides how to present available capabilities to the model and the user. (pp. 96–98)
+
+### Connection lifecycle
+
+1. **Initialize.** Client and server negotiate a version and capabilities. The client then sends an initialized notification.
+2. **Discover.** `tools/list` returns names, descriptions, and `inputSchema`. Resources and prompts have their own discovery methods.
+3. **Operate.** `tools/call` sends a name and arguments. The server runs the tool and returns the result.
+4. **Shutdown.** The client closes the connection. (pp. 99–102)
+
+MCP uses **JSON-RPC 2.0** for structured messages. A request has a `method` and optional `params`. An `id` matches a request with its `result` or `error`. A notification omits the request ID. Tool results can include a `content` field. (pp. 100–102)
+
+| Transport | Communication channel |
 | --- | --- |
-| **Tools** | Functions that perform actions. A model can select one based on its description and the task. |
-| **Resources** | URI-addressed data that the host can read and add to context. |
-| **Prompts** | Reusable templates that shape interactions. |
+| **stdio** | A local process exchanges messages with the client through standard input and output. |
+| **Streamable HTTP** | A client sends HTTP requests to an endpoint. Responses can use Server-Sent Events (SSE), and the service can require HTTP authentication. |
 
-Tools let the host present a common tool interface to the model while server implementations vary. (pp. 97–98, 121)
+The transport carries the JSON-RPC messages. Tool discovery and invocation have the same roles on either transport. (p. 103)
 
-![The MCP client sends a tool request to the server, which executes the implementation and returns the result.](images/03-mcp-tool-layer.png)
+## 3. Add MCP Server to your first Agent
 
-## Connection Lifecycle and JSON-RPC 2.0
+Moving a local tool to MCP changes the execution boundary. The model still sees a tool definition. The host still owns the agent loop. The MCP client sends the call to a server, which owns the implementation and returns the result. (pp. 104–115)
 
-1. **Initialize.** The client and server negotiate a protocol version and capabilities. The client then sends an initialized notification.
-2. **Discover.** `tools/list` returns tool names, descriptions, and an `inputSchema` for each tool. Resources and prompts have corresponding discovery methods.
-3. **Operate.** The host supplies available tool definitions to the model. When the model requests a tool, the client sends `tools/call` with a name and arguments, and the server returns its result.
-4. **Shutdown.** The client closes the transport when the connection is no longer needed. (pp. 99–102)
+![The MCP client sends the request. The server executes the tool and returns the result.](images/03-mcp-tool-layer.png)
 
-**JSON-RPC 2.0** defines the message format. A request contains a `method` and optional `params`. Its `id` correlates it with a `result` or `error` response. Notifications omit the request ID. Tool responses can carry output in `content` for the host to return to the model. (pp. 100–102)
+`FastMCP` can publish functions registered with `@mcp.tool()`. `MultiServerMCPClient` connects a LangChain host to servers, and `get_tools()` exposes discovered tools in a form the agent can use. Direct calls suit simple local logic. A protocol boundary helps when tools are shared across applications or owned by a different service. (pp. 107–115, 121)
 
-| Transport | Communication model |
-| --- | --- |
-| **stdio** | The host can launch a local server process and exchange messages through standard input and output. |
-| **Streamable HTTP** | The client sends HTTP requests to a server endpoint. The server can stream responses through Server-Sent Events (SSE), and the service can require HTTP authentication. |
+## 4. Real World MCP Walkthrough
 
-The same protocol message structure can travel through either transport. (p. 103)
+A server can receive an MCP request through one transport and call a downstream service through another. OCI Usage MCP Server illustrates this boundary. (pp. 116–120)
 
-## Tool Discovery and Agent Integration
+**MCP client → stdio → OCI Usage MCP Server → HTTPS → OCI Usage REST API**
 
-`FastMCP` can expose registered functions with `@mcp.tool()`. In a LangChain host, `MultiServerMCPClient` manages MCP server connections, and `get_tools()` discovers tools and presents them in a form the agent can use. The server owns the tool implementation. The host coordinates the agent loop and returns the server's result to the model. (pp. 104–114)
-
-A direct function call has lower integration overhead for simple local logic. MCP is useful when several applications share a tool, its implementation runs remotely, or another team owns it. (pp. 110–115, 121)
-
-## MCP Transport and Downstream Services
-
-An MCP connection and a server's downstream API connection are different boundaries. OCI Usage MCP Server can communicate with its local MCP client over stdio while using an OCI configuration profile to authenticate an HTTPS request to the OCI Usage REST API. The `get_summarized_usage` schema covers tenancy, time range, `granularity`, `group_by`, and `query_type`. The MCP client invokes the tool through the shared protocol, and the server owns the authenticated OCI request. (pp. 116–121)
+The MCP server uses an OCI configuration profile to authenticate the downstream request. `get_summarized_usage` accepts a tenancy, time range, `granularity`, `group_by`, and `query_type`. These fields belong to the OCI tool. The client can discover and call it through the same MCP interface used for other tools. (pp. 118–121)

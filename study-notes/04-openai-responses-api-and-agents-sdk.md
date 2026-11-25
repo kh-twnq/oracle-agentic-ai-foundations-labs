@@ -2,46 +2,68 @@
 
 Module 4 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 123–162 · [Index](README.md)
 
-## API and Runtime Responsibilities
+## Agenda
 
-The **Responses API** accepts model input, makes declared tools available, and returns structured output. The **Agents SDK** uses the Responses API and adds agent configuration, a runner, handoffs, guardrails, and tracing. The application defines its business rules and controls the permissions of operations that affect external systems. (pp. 123–129)
+1. [OpenAI Agent Stack](#1-openai-agent-stack)
+2. [OpenAI Responses API](#2-openai-responses-api)
+3. [OpenAI Agents SDK](#3-openai-agents-sdk)
+4. [Tools and Function Calling](#4-tools-and-function-calling)
+5. [Multi-Agent Systems with Handoffs](#5-multi-agent-systems-with-handoffs)
+6. [Guardrails and Safety](#6-guardrails-and-safety)
+7. [Putting it all together](#7-putting-it-all-together)
 
-| Approach | Ownership of the execution loop |
+Student Guide agenda, p. 124.
+
+## 1. OpenAI Agent Stack
+
+The **OpenAI agent stack** separates the application, the runtime, and the model API. The application owns business rules and permissions. The **Responses API** sends inputs to a model and returns structured output. The **Agents SDK** coordinates multi-step agent runs on top of the API. (pp. 125–129)
+
+| Interface | Who controls the next step? |
 | --- | --- |
-| **Responses API directly** | The application interprets responses and manages any additional steps. This suits short flows or applications that need explicit control over each transition. |
-| **Agents SDK** | The application configures agents, tools, and handoff targets. The Runner coordinates model calls, tool execution, and agent transitions. |
+| **Responses API directly** | Application code interprets responses and decides which calls to make next. |
+| **Agents SDK** | The configured runner manages the loop, including tool execution and handoffs. |
 
 ![The OpenAI agent stack includes the Responses API, Agents SDK, guardrails, and tracing.](images/04-openai-agent-stack.png)
 
-## Responses, Tools, and Conversation State
+## 2. OpenAI Responses API
 
-`client.responses.create()` associates input with a model. Input can be text or structured data. The response exposes individual output items, while `response.output_text` provides convenient access to the text. **Conversation chaining** uses `previous_response_id` to connect a new turn to the context of an earlier response. (pp. 130–133)
+`client.responses.create()` takes a model and text or structured input. The response contains **output items** for structured processing. `response.output_text` exposes the text for display. (pp. 130–132)
 
-The platform can provide built-in tools such as **Web Search**, **File Search**, **Code Interpreter**, **Computer Use**, and **Image Generation**. The application declares which tools are available. The model selects a tool when the task requires one. (pp. 134–135)
+**Conversation chaining** uses `previous_response_id` to connect a new turn to the context of an earlier response. Available built-in tools can include Web Search, File Search, Code Interpreter, Computer Use, and Image Generation. The application declares the available tools, and the model decides when to use them. (pp. 133–135)
 
-## Runner and Function Calling
+## 3. OpenAI Agents SDK
 
-An `Agent` holds instructions, a model, and tools. `Runner.run_sync()` executes synchronously, and `Runner.run()` supports asynchronous execution. The Runner sends the input to the model, executes requested tools, and passes their results back into the loop. A completed run exposes its final result through `result.final_output`. (pp. 136–141)
+`Agent` holds instructions, a model, and tools. The **Runner** sends input to the model, executes requested tools, and feeds their results back. It repeats the loop until the run reaches a final output. (pp. 136–141)
 
-| Tool type | Where the work happens |
+`Runner.run_sync()` runs synchronously. `Runner.run()` is asynchronous. The completed run exposes its final result as `result.final_output`. (pp. 138–141)
+
+## 4. Tools and Function Calling
+
+| Tool type | Who does the work? |
 | --- | --- |
-| **Hosted Tools** | The platform provides and executes capabilities such as Web Search or Code Interpreter. |
-| **Function Tools** | The application executes Python functions registered with `@function_tool`. Type hints and docstrings describe the interface exposed to the model. |
-| **Agents as Tools** | `as_tool()` exposes a specialist agent as a tool. Its result returns to the agent that called it. |
+| **Hosted Tools** | The platform provides and executes a capability such as Web Search or Code Interpreter. |
+| **Function Tools** | The application's Python function runs. `@function_tool` exposes its schema using metadata such as type hints and the docstring. |
+| **Agents as Tools** | `as_tool()` exposes a specialist agent. Its result returns to the agent that called it. |
 
-A tool result can supply an argument for a later call. The Runner preserves that dependency, while application functions retain their own validation and business logic. (pp. 142–148) [Tool execution in LangChain](02-langchain-for-ai-agents.md#model-requests-and-tool-execution)
+The runner returns intermediate tool results to the model so later calls can depend on them. The application function retains its own validation and business logic. (pp. 142–148) [Tool execution in LangChain](02-langchain-for-ai-agents.md#3-langchain-agent-under-the-hood)
 
-## Handoff and Manager Pattern
+## 5. Multi-Agent Systems with Handoffs
 
-| Pattern | Who owns the remainder of the run? |
+**Triage** routes a request to a suitable specialist. The orchestration pattern determines who controls the run after routing. (pp. 149–152)
+
+| Pattern | Who owns the rest of the run? |
 | --- | --- |
-| **Handoff** | A triage agent routes the request and transfers control to a specialist. `handoff_description` states when to select a specialist, and `handoffs` defines the available targets. |
-| **Manager pattern** | A central agent retains control, calls specialists via `as_tool()`, and uses their results to compose the final response. |
+| **Handoff** | The specialist takes control. `handoff_description` describes when to route to it, and `handoffs` lists available targets. |
+| **Manager pattern** | The manager keeps control, calls specialists through `as_tool()`, and combines their results. |
 
-Handoffs fit requests with one primary owner. The manager pattern fits work that requires results from several specialists. (pp. 149–152, 157–162)
+## 6. Guardrails and Safety
 
-## Guardrails and Tracing
+**Input guardrails** validate a request. A blocking check finishes before the agent starts. A concurrent check can overlap with agent work, which reduces waiting time and allows work to start before the result is known. **Output guardrails** check the final result. (pp. 153–154)
 
-**Input guardrails** validate requests. Blocking execution waits for the check to finish before the agent starts. Concurrent execution can reduce waiting time by starting agent work before the check completes. **Output guardrails** check the final result against quality, policy, or data-handling requirements. An `@input_guardrail` can return `GuardrailFunctionOutput` with `tripwire_triggered` to stop a run. Pydantic represents structured validation results. (pp. 153–155)
+An `@input_guardrail` can return `GuardrailFunctionOutput` with `tripwire_triggered` set to stop the run. Pydantic can represent the structured result of a checker agent. **Tracing** records model calls, tool arguments, handoffs, guardrail outcomes, time, and token usage. A **span** represents an individual operation in the trace. (pp. 155–156)
 
-**Tracing** records agent invocations, tool arguments, handoffs, guardrail decisions, latency, and token usage. Each span represents one operation, which allows developers to isolate the duration of a model call or tool execution. (pp. 156, 159–162)
+## 7. Putting it all together
+
+A customer support system combines an input guardrail, a triage agent, and specialists for order status, refunds, or frequently asked questions. The guardrail checks scope. Triage selects the specialist. The specialist calls the appropriate function or search tool and uses the result in its answer. (pp. 157–162)
+
+A trace connects the routing decision to the selected tool and the final answer. It also shows whether latency came from a model call, a guardrail, or the function itself. (pp. 159–161)

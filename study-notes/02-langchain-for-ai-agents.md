@@ -2,43 +2,53 @@
 
 Module 2 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 55–89 · [Index](README.md)
 
-## The LangChain Ecosystem
+## Agenda
 
-LangChain provides components for preparing prompts, calling models, interpreting output, and accessing tools or data. A **chain** composes a defined sequence of components. An **agent** uses a model to select actions as the run progresses. **Retrieval-Augmented Generation (RAG)** supplies retrieved material as context for generation. (pp. 55–59)
+1. [Introduction to LangChain](#1-introduction-to-langchain)
+2. [Build your first agent using LangChain](#2-build-your-first-agent-using-langchain)
+3. [LangChain Agent under the hood](#3-langchain-agent-under-the-hood)
 
-| Component | Responsibility |
+Student Guide agenda, p. 56.
+
+## 1. Introduction to LangChain
+
+LangChain supplies components for composing LLM applications. A **chain** connects a defined sequence of steps. An **agent** lets the model select the next action during a run. **Retrieval-Augmented Generation (RAG)** places retrieved material in the model's context. (pp. 57–59)
+
+| Component | Purpose |
 | --- | --- |
-| **LangChain** | Composable models, prompts, chains, tools, and memory components. |
-| **LangGraph** | Graph-based orchestration for workflows with state, branching, and loops. |
-| **LangSmith** | Observability, tracing, testing, and debugging. |
-| **Integrations** | Connections to model providers, databases, search APIs, and other services. |
+| **LangChain** | Composes models, prompts, chains, tools, and memory. |
+| **LangGraph** | Represents state, branches, and loops as a graph. |
+| **LangSmith** | Supports tracing, inspection, testing, and debugging. |
+| **Integrations** | Connect to model providers, databases, search APIs, and other services. |
 
-**A unified model interface lets developers switch providers with minimal code changes.** `init_chat_model()` resolves a model identifier with a provider prefix. The application-facing interface is shared, while tool-calling behavior, context limits, and reasoning capabilities depend on the chosen model. Integration packages and credentials depend on the provider. (pp. 60, 71, 89)
+**A unified model interface lets developers switch providers with minimal code changes.** `init_chat_model()` accepts a model identifier with a provider prefix. Tool calling, context limits, and reasoning capability still depend on the selected model. Integration packages and credentials are provider-specific. (pp. 60, 71, 89)
 
-## Prompt Templates and LCEL
+### Prompt templates and LCEL
 
-| Prompt format | Purpose |
+`PromptTemplate` fills variables in text. `ChatPromptTemplate` builds role-based messages for system instructions, human input, and previous AI responses. A **few-shot prompt** uses input-output pairs to demonstrate the expected behavior. (p. 61)
+
+**LangChain Expression Language (LCEL) uses the pipe operator `|` to pass the output of one component to the next.** In a typical chain, a prompt goes to the model, and `StrOutputParser()` extracts the text from the response. (pp. 62, 89)
+
+![LCEL passes a prepared prompt to the model and the response to StrOutputParser.](images/02-langchain-chain.png)
+
+## 2. Build your first agent using LangChain
+
+A basic model call returns an output from its input. An agent can act, observe the result, and use that observation to decide what to do next. This is **ReAct**. It suits tasks that depend on current data or intermediate results. (pp. 63–65, 70)
+
+| Tool metadata | What the model or framework uses it for |
 | --- | --- |
-| `PromptTemplate` | Produces plain text by filling in named variables. |
-| `ChatPromptTemplate` | Produces role-based messages, including system instructions, human input, and previous AI responses. |
-| Few-shot prompt | Includes input-output pairs that illustrate the expected behavior. |
+| `@tool` | Registers a Python function as a callable tool. |
+| Function name and type hints | Identify the tool and define the input fields and types. |
+| Docstring | Describes what the tool does and when to select it. |
+| Return annotation | Describes the expected result type. |
+| Function body | Performs the operation when the application calls the function. |
 
-**LangChain Expression Language (LCEL) connects components with the pipe operator `|`, passing each component's output to the next.** A common chain formats a prompt, sends it to a model, and uses `StrOutputParser()` to extract text from the model response. (pp. 61–62, 89)
+A tool definition contains `name`, `description`, and `parameters`. The parameters schema identifies required inputs. `create_agent()` binds the model to its tools, and `agent.invoke()` starts a run with the supplied messages. (pp. 66–74)
 
-![LCEL passes the prompt to the model and the model response to StrOutputParser.](images/02-langchain-chain.png)
+## 3. LangChain Agent under the hood
 
-## Tool Schemas and Agent Control Flow
+**The first Model API request carries the user message in `messages` and the available tool definitions in `tools`.** The model can answer or return `tool_calls` with a name, arguments, and a call ID. In the response format shown here, arguments arrive as a JSON string. (pp. 74–77)
 
-A tool allows the agent to request work such as a database query, an API call, or a computation. LangChain supports built-in tools and custom Python functions registered with `@tool`. The function name and type hints contribute to the input schema. The docstring explains when the model should select the tool, and the return annotation describes the expected result. The function body implements the operation. A tool definition exposes `name`, `description`, and `parameters`, including required inputs. (pp. 63–69, 75)
+**The model selects the tool and arguments. LangChain resolves the name in the tool registry and executes the function in the application.** The runtime adds the result as a `tool` message. Its `tool_call_id` matches the original request. The next model call receives the updated history, so the model can use that result to choose another action or finish. (pp. 78–85, 87–89)
 
-In **ReAct**, a model decision can lead to a tool call. The runtime supplies the resulting observation so the model can decide whether it has enough information to answer. `create_agent()` associates a model with its available tools, and `agent.invoke()` starts a run with the supplied conversation messages. (pp. 70–74)
-
-## Model Requests and Tool Execution
-
-**The initial Model API request contains the user message in `messages` and the available tool definitions in `tools`.** The model can respond with structured `tool_calls`, each containing a tool name, arguments, and a call ID. In this Model API response format, arguments are encoded as a JSON string. (pp. 74–77)
-
-**The model selects the tool and arguments. LangChain resolves the name in the tool registry and executes the function in the application.** It then appends a result as a `tool` message with a matching `tool_call_id`. Subsequent requests carry the conversation history and tool definitions. This lets the model associate each observation with its call and use earlier results in later decisions. The loop ends when the model returns a final text response with no remaining tool calls. (pp. 78–85, 87–89)
-
-## Tracing and Debugging
-
-**Understanding the work behind `agent.invoke()` helps developers debug failures, build custom loops, optimize performance, and operate agents in production.** A trace can identify the tool schema sent to the model, the name and arguments it returned, the function selected by the registry, and the result added to state. These points distinguish a request or selection issue from an execution issue. (pp. 85–89)
+**Understanding the work behind `agent.invoke()` helps developers debug failures, build custom loops, optimize performance, and operate agents in production.** Inspect the tool definition, the model's arguments, the resolved function, and the message added to the history to locate a failure. (pp. 85–89)
