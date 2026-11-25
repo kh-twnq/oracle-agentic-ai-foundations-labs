@@ -1,47 +1,49 @@
 # Introduction to MCP
 
-Module 3 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), trang 91–121 · [Mục lục](README.md)
+Module 3 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 91–121 · [Index](README.md)
 
-Model Context Protocol (MCP) chuẩn hóa kết nối giữa AI applications và các hệ thống cung cấp tools, data và prompts. Guide bắt đầu với kiến trúc và vòng đời của kết nối, sau đó dùng cùng một protocol cho math tools cục bộ và báo cáo chi phí OCI. (trang 91–93)
+## The MCP Integration Model
 
-## MCP Architecture và Core Primitives
+**Model Context Protocol (MCP)** defines a shared interface through which AI applications access tools, resources, and prompts. With `N` applications and `M` services, a separate adapter for every pair can require up to `N × M` integrations. A common protocol gives each application and service a shared integration point, represented by the `N + M` model. (pp. 91–96)
 
-Với custom integration cho từng cặp application và service, số adapter có thể tăng theo `N × M`. Protocol chung cho phép mỗi phía triển khai một integration tương thích, tương ứng với mô hình `N + M` trong slide. Mỗi **host** điều phối application và tạo một hoặc nhiều **MCP clients**. Mỗi client giữ kết nối với một **MCP server**. Server có thể chạy trên cùng máy hoặc từ xa. (trang 94–96)
-
-| Primitive | Vai trò |
+| Component | Responsibility |
 | --- | --- |
-| **Tools** | Functions để thực hiện hành động. Model thường chọn tool dựa trên nhiệm vụ và description. |
-| **Resources** | Dữ liệu có địa chỉ URI mà application có thể đọc để đưa vào context. |
-| **Prompts** | Templates tái sử dụng để định hình interaction, chẳng hạn mẫu review hoặc tóm tắt. |
+| **Host** | Runs the AI application, coordinates model interactions, and creates MCP clients. |
+| **MCP client** | Maintains the connection to one server and exchanges protocol messages. |
+| **MCP server** | Publishes capabilities and executes the tools it provides. It can run locally or remotely. |
 
-Tools là primitive được dùng nhiều nhất trong các ví dụ của Guide. Host quản lý interaction, còn server công bố capabilities và thực thi các tool mà nó cung cấp. (trang 97–98)
-
-![MCP client gửi tool request đến MCP server, server chạy implementation và trả kết quả.](images/03-mcp-tool-layer.png)
-
-## Connection Lifecycle, JSON-RPC 2.0 và transports
-
-1. **Initialize.** Client và server trao đổi protocol version cùng capabilities. Client gửi notification `initialized` sau khi bắt tay.
-2. **Discover.** Client dùng `tools/list` để lấy tool names, descriptions và `inputSchema`. Resources và prompts có các phương thức discovery tương ứng.
-3. **Operate.** Khi model chọn một tool, client gửi `tools/call` cùng `name` và `arguments`. Server chạy tool và gửi result về client.
-4. **Shutdown.** Client đóng transport khi hoàn thành phiên làm việc. (trang 99–102)
-
-**JSON-RPC 2.0** dùng `method` và `params` trong request. `id` ghép request với response tương ứng, còn response mang `result` hoặc `error`. Notification không có request ID. Ví dụ với math server, result của một phép nhân có thể được trả trong `content` rồi đưa vào context của model. (trang 100–102)
-
-| Transport | Cách giao tiếp |
+| Primitive | Purpose |
 | --- | --- |
-| **stdio** | Host khởi chạy server như child process. Hai phía trao đổi protocol messages qua stdin và stdout trên cùng máy. |
-| **Streamable HTTP** | Client gửi HTTP requests đến service endpoint. Server có thể truyền response qua SSE. Transport này phù hợp với remote services và có thể dùng HTTP authentication. |
+| **Tools** | Functions that perform actions. A model can select one based on its description and the task. |
+| **Resources** | URI-addressed data that the host can read and add to context. |
+| **Prompts** | Reusable templates that shape interactions. |
 
-Protocol message giữ cùng cấu trúc khi thay transport. (trang 103)
+Tools let the host present a common tool interface to the model while server implementations vary. (pp. 97–98, 121)
 
-## Add MCP to a LangChain agent
+![The MCP client sends a tool request to the server, which executes the implementation and returns the result.](images/03-mcp-tool-layer.png)
 
-Bài lab đưa `add`, `multiply`, `divide` và `square_root` sang Python process riêng. Server dùng `FastMCP`, đăng ký functions bằng `@mcp.tool()` và chạy với `stdio`. Phía LangChain khai báo lệnh khởi chạy và đường dẫn server trong `MultiServerMCPClient`. Client gọi `get_tools()` để discovery, adapter chuyển tools sang dạng dùng được với `create_agent()`, rồi agent chạy theo flow bất đồng bộ. (trang 104–109)
+## Connection Lifecycle and JSON-RPC 2.0
 
-Khi model chọn tool, application vẫn điều phối ReAct loop. Client chuyển lời gọi qua MCP, server thực thi function, và tool result quay về model. Tool registration, schema, execution và implementation của các MCP tools nằm phía server. Từ góc nhìn model, các thông tin cần để reasoning vẫn là tool definitions và tool results. MCP có ích khi nhiều applications cần dùng chung tools hoặc dùng tools do nhóm khác cung cấp. Gọi Python function trực tiếp là cách đơn giản cho math tools cục bộ. (trang 110–115)
+1. **Initialize.** The client and server negotiate a protocol version and capabilities. The client then sends an initialized notification.
+2. **Discover.** `tools/list` returns tool names, descriptions, and an `inputSchema` for each tool. Resources and prompts have corresponding discovery methods.
+3. **Operate.** The host supplies available tool definitions to the model. When the model requests a tool, the client sends `tools/call` with a name and arguments, and the server returns its result.
+4. **Shutdown.** The client closes the transport when the connection is no longer needed. (pp. 99–102)
 
-## Real-world walkthrough với OCI Usage MCP Server
+**JSON-RPC 2.0** defines the message format. A request contains a `method` and optional `params`. Its `id` correlates it with a `result` or `error` response. Notifications omit the request ID. Tool responses can carry output in `content` for the host to return to the model. (pp. 100–102)
 
-OCI Usage MCP Server đóng gói OCI Usage REST API, cùng nguồn dữ liệu dùng trong Cost Analysis. Guide chạy package `oracle.oci-usage-mcp-server` bằng `uvx`. Client giao tiếp với process server qua stdio. Server dùng OCI configuration profile để xác thực và gửi request đến OCI qua HTTPS. Hai kết nối này giải thích vì sao MCP transport là local stdio dù dữ liệu đến từ cloud. (trang 116–120)
+| Transport | Communication model |
+| --- | --- |
+| **stdio** | The host can launch a local server process and exchange messages through standard input and output. |
+| **Streamable HTTP** | The client sends HTTP requests to a server endpoint. The server can stream responses through Server-Sent Events (SSE), and the service can require HTTP authentication. |
 
-`get_summarized_usage` nhận tenancy ID, thời gian bắt đầu và kết thúc, `granularity`, `group_by` và `query_type`. Client trực tiếp có thể đọc schema và chạy tool để kiểm tra dữ liệu. Agent có thể chuyển câu hỏi ngôn ngữ tự nhiên thành arguments rồi tóm tắt report. Khi đối chiếu với Cost Analysis, dùng cùng khoảng ngày, granularity và bộ lọc. (trang 119–121) [Hướng dẫn chạy lab và kết quả mẫu](../labs/README.md)
+The same protocol message structure can travel through either transport. (p. 103)
+
+## Tool Discovery and Agent Integration
+
+`FastMCP` can expose registered functions with `@mcp.tool()`. In a LangChain host, `MultiServerMCPClient` manages MCP server connections, and `get_tools()` discovers tools and presents them in a form the agent can use. The server owns the tool implementation. The host coordinates the agent loop and returns the server's result to the model. (pp. 104–114)
+
+A direct function call has lower integration overhead for simple local logic. MCP is useful when several applications share a tool, its implementation runs remotely, or another team owns it. (pp. 110–115, 121)
+
+## MCP Transport and Downstream Services
+
+An MCP connection and a server's downstream API connection are different boundaries. OCI Usage MCP Server can communicate with its local MCP client over stdio while using an OCI configuration profile to authenticate an HTTPS request to the OCI Usage REST API. The `get_summarized_usage` schema covers tenancy, time range, `granularity`, `group_by`, and `query_type`. The MCP client invokes the tool through the shared protocol, and the server owns the authenticated OCI request. (pp. 116–121)

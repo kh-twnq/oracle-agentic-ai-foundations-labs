@@ -1,59 +1,44 @@
 # LangChain for AI Agents
 
-Module 2 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), trang 55–89 · [Mục lục](README.md)
+Module 2 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 55–89 · [Index](README.md)
 
-LangChain kết nối LLM với tools, APIs và nguồn dữ liệu để xây chatbot, agent và ứng dụng Retrieval-Augmented Generation (RAG). Module này bắt đầu từ một chain gồm prompt, model và output parser, sau đó xây agent có thể gọi Python tools. Ví dụ cuối theo dõi câu hỏi tính toán qua ba lần gọi Model API để thấy phần việc của model, framework và application. (trang 55–56)
+## The LangChain Ecosystem
 
-## LangChain Ecosystem, Models và Prompts
+LangChain provides components for preparing prompts, calling models, interpreting output, and accessing tools or data. A **chain** composes a defined sequence of components. An **agent** uses a model to select actions as the run progresses. **Retrieval-Augmented Generation (RAG)** supplies retrieved material as context for generation. (pp. 55–59)
 
-LangChain cung cấp các building blocks như models, prompts, chains, tools và memory. **LangGraph** biểu diễn workflow dạng graph khi cần quản lý state, nhánh và vòng lặp. **LangSmith** cung cấp observability, tracing, testing và debugging. **Integrations** nối framework với model providers, vector databases, search APIs và các hệ thống khác. (trang 57–59)
-
-`init_chat_model()` dùng model identifier có provider prefix. Guide minh họa đổi giữa OpenAI và Anthropic trong cùng cách khởi tạo. **Unified model interface giúp giảm số chỗ phải sửa khi chuyển provider.** Khả năng tool calling, context window và reasoning vẫn phụ thuộc model đã chọn, còn package và credentials được cấu hình theo integration tương ứng. (trang 60, 71, 89)
-
-Prompt template giữ cấu trúc cố định và điền giá trị vào placeholders tại runtime. Ba dạng trong guide phục vụ các nhu cầu sau. (trang 61)
-
-| Thành phần | Cách dùng |
+| Component | Responsibility |
 | --- | --- |
-| `PromptTemplate` | Tạo prompt text từ biến như `topic`. |
-| `ChatPromptTemplate` | Tạo messages theo role. System định hướng hành vi và giọng điệu, human chứa input của người dùng, AI biểu diễn phản hồi trước đó. |
-| Few-shot prompt | Đưa cặp input và output mẫu để định hướng cách model trả lời. |
+| **LangChain** | Composable models, prompts, chains, tools, and memory components. |
+| **LangGraph** | Graph-based orchestration for workflows with state, branching, and loops. |
+| **LangSmith** | Observability, tracing, testing, and debugging. |
+| **Integrations** | Connections to model providers, databases, search APIs, and other services. |
 
-## LCEL và Chain Composition
+**A unified model interface lets developers switch providers with minimal code changes.** `init_chat_model()` resolves a model identifier with a provider prefix. The application-facing interface is shared, while tool-calling behavior, context limits, and reasoning capabilities depend on the chosen model. Integration packages and credentials depend on the provider. (pp. 60, 71, 89)
 
-**LangChain Expression Language (LCEL) dùng toán tử pipe `|` để chuyển output của mỗi bước sang bước kế tiếp.** Với `chain = prompt | model | StrOutputParser()`, lời gọi `chain.invoke({"topic": "AI agents"})` điền `topic` vào template, gửi prompt đã tạo đến model, rồi lấy phần text từ chat response. Kết quả là một chuỗi Python để application sử dụng. (trang 62, 89)
+## Prompt Templates and LCEL
 
-![LCEL chuyển dữ liệu từ prompt qua model rồi đến StrOutputParser.](images/02-langchain-chain.png)
-
-## Build agent với Tools và ReAct
-
-Trong ví dụ của Guide, một basic LLM call đi từ input qua model đến output trong một lượt. Agent giữ context của các bước trước và dùng model để chọn bước tiếp theo, chẳng hạn gọi tool, quan sát kết quả hoặc trả lời người dùng. Tools có thể là web search, database query, code execution hoặc lời gọi custom API. Guide giới thiệu built-in tools và custom Python functions đăng ký bằng `@tool`. (trang 63–65)
-
-| Thành phần của Python tool | Vai trò |
+| Prompt format | Purpose |
 | --- | --- |
-| `@tool` | Đăng ký function với framework để agent có thể yêu cầu gọi. |
-| Tên hàm và type hints | Giúp tạo tool definition và JSON schema cho arguments, ví dụ hai tham số số của `add`. |
-| Docstring | Mô tả tác dụng và thời điểm dùng tool để model chọn đúng chức năng. |
-| Return annotation, ví dụ `-> float` | Mô tả kiểu kết quả dự kiến để hiểu cách dùng output ở bước sau. |
-| Function body | Chứa phép tính, truy vấn hoặc hành động do application thực thi. |
+| `PromptTemplate` | Produces plain text by filling in named variables. |
+| `ChatPromptTemplate` | Produces role-based messages, including system instructions, human input, and previous AI responses. |
+| Few-shot prompt | Includes input-output pairs that illustrate the expected behavior. |
 
-Tool definition mà model nhận có `name`, `description` và `parameters`. Trong payload minh họa, `parameters` xác định kiểu dữ liệu và danh sách trường bắt buộc. (trang 66–69, 75)
+**LangChain Expression Language (LCEL) connects components with the pipe operator `|`, passing each component's output to the next.** A common chain formats a prompt, sends it to a model, and uses `StrOutputParser()` to extract text from the model response. (pp. 61–62, 89)
 
-**ReAct** tổ chức quá trình này thành vòng lặp. Ở **Reason**, model xác định cần dữ liệu hay hành động gì. Ở **Act**, agent gọi tool hoặc trả lời. Ở **Observe**, model nhận kết quả để ra quyết định tiếp theo. Vòng lặp kết thúc khi agent có đủ thông tin hoặc đạt giới hạn số lượt. Trong ví dụ thời tiết Seattle, agent chọn tool tìm thời tiết, đọc kết quả, rồi trả lời dựa trên dữ liệu vừa nhận. (trang 70)
+![LCEL passes the prompt to the model and the model response to StrOutputParser.](images/02-langchain-chain.png)
 
-Bài thực hành thiết lập Python virtual environment và cài `langchain`, `langchain-openai`, `langgraph`, `python-dotenv`. Ví dụ OpenAI đọc `OPENAI_API_KEY` từ cấu hình môi trường. Quy trình của bài lab là khởi tạo model bằng `init_chat_model()`, đăng ký `multiply` và `divide`, truyền model và tools vào `create_agent()`, rồi gọi `agent.invoke()` với user message. Logic kiểm tra chia cho 0 nằm trong hàm `divide`. (trang 71–72) [Hướng dẫn chạy lab](../labs/README.md)
+## Tool Schemas and Agent Control Flow
 
-## Agent Loop và Tool Execution
+A tool allows the agent to request work such as a database query, an API call, or a computation. LangChain supports built-in tools and custom Python functions registered with `@tool`. The function name and type hints contribute to the input schema. The docstring explains when the model should select the tool, and the return annotation describes the expected result. The function body implements the operation. A tool definition exposes `name`, `description`, and `parameters`, including required inputs. (pp. 63–69, 75)
 
-Guide lần theo câu hỏi tính **15 × 8 ÷ 3**. Python code khởi động agent bằng `agent.invoke()`. LangChain chuẩn bị request và xử lý kết quả. **Model quyết định tool và arguments.** Trong walkthrough, bộ tools gồm `add`, `multiply`, `divide` và `square_root`. (trang 73–78)
+In **ReAct**, a model decision can lead to a tool call. The runtime supplies the resulting observation so the model can decide whether it has enough information to answer. `create_agent()` associates a model with its available tools, and `agent.invoke()` starts a run with the supplied conversation messages. (pp. 70–74)
 
-| Lần gọi Model API | Dữ liệu gửi đi | Response và bước tiếp theo | Trang |
-| --- | --- | --- | --- |
-| 1 | **`messages` chứa user message. `tools` chứa các tool definitions model được phép dùng.** | Model yêu cầu `multiply(15, 8)` với ID `call_001`. LangChain tra registry, thực thi hàm và nhận 120. | 74–79 |
-| 2 | History gồm user message, assistant tool call và tool result 120, cùng tool definitions. | Model dùng 120 làm đầu vào của `divide(120, 3)`, với ID `call_002`. LangChain thực thi hàm và nhận 40.0. | 80–82 |
-| 3 | History gồm năm messages, tức user message và hai cặp tool call–tool result. Tool definitions vẫn được gửi cùng request. | Model trả câu trả lời bằng text với kết quả 40. LangChain kết thúc vòng lặp và trả result về Python code. | 83–85 |
+## Model Requests and Tool Execution
 
-Một tool call trong payload minh họa có tên, arguments ở dạng JSON string và call ID. **LangChain parse arguments, tìm function tương ứng trong tool registry rồi thực thi ở application.** Tool result là message role `tool`. Trường `tool_call_id` nối nó với đúng lời gọi. Việc gửi lại history trong các request của bài giúp model biết phép nhân đã hoàn thành và dùng kết quả của phép nhân cho phép chia. (trang 76–88)
+**The initial Model API request contains the user message in `messages` and the available tool definitions in `tools`.** The model can respond with structured `tool_calls`, each containing a tool name, arguments, and a call ID. In this Model API response format, arguments are encoded as a JSON string. (pp. 74–77)
 
-## Tracing và Debugging
+**The model selects the tool and arguments. LangChain resolves the name in the tool registry and executes the function in the application.** It then appends a result as a `tool` message with a matching `tool_call_id`. Subsequent requests carry the conversation history and tool definitions. This lets the model associate each observation with its call and use earlier results in later decisions. The loop ends when the model returns a final text response with no remaining tool calls. (pp. 78–85, 87–89)
 
-`agent.invoke()` điều phối việc dựng schemas, định dạng request, parse responses, tìm và chạy tools, nối results vào history, rồi quyết định có gọi model tiếp hay đã đến final answer. Khi đọc trace, bắt đầu từ tool definition model đã nhận. Sau đó đối chiếu tên và arguments trong tool call, hàm thật trong registry, kết quả thực thi và message được gửi lại. Guide dùng khả năng theo dõi các bước này để giải thích vì sao **hiểu internals giúp debug, xây custom agent loop, tối ưu performance và triển khai production.** (trang 85–89)
+## Tracing and Debugging
+
+**Understanding the work behind `agent.invoke()` helps developers debug failures, build custom loops, optimize performance, and operate agents in production.** A trace can identify the tool schema sent to the model, the name and arguments it returned, the function selected by the registry, and the result added to state. These points distinguish a request or selection issue from an execution issue. (pp. 85–89)

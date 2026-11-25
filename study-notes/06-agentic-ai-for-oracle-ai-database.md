@@ -1,64 +1,55 @@
 # Agentic AI for Oracle AI Database
 
-Module 6 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), trang 197–241 · [Mục lục](README.md)
+Module 6 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 197–241 · [Index](README.md)
 
-Module này trình bày cách tìm dữ liệu theo ngữ nghĩa trong Oracle AI Database, xây agent bằng giao diện no-code, chạy agent workflow trong database và expose tools qua MCP. Sơ đồ tổng quan của Guide cũng giới thiệu Autonomous AI Vector Database trong nhóm khả năng dành cho vector workloads. (trang 197–200)
+Enterprise agents can retrieve relevant information, carry out authorized operations, and share tools with external applications. **Oracle AI Vector Search** provides semantic retrieval. **Private Agent Factory** and **Select AI Agent** support agent workflows. **Autonomous AI Database MCP Server** exposes tools through MCP. **Autonomous AI Vector Database** is a related capability for vector workloads. (pp. 197–200)
 
-![Oracle AI Database kết hợp AI Vector Search, Agent Factory, Select AI Agent và Autonomous MCP Server.](images/06-oracle-ai-database.png)
+![Oracle AI Database capabilities include AI Vector Search, Agent Factory, Select AI Agent, and Autonomous MCP Server.](images/06-oracle-ai-database.png)
 
-## Embeddings và Oracle AI Vector Search
+## Embeddings and Semantic Search
 
-Keyword search tìm những từ xuất hiện trong dữ liệu. **Semantic search** dùng embedding để tìm nội dung gần nghĩa với query. Một embedding là vector số do model tạo. Với văn bản, tokenizer chia input thành tokens, kể cả subword tokens, rồi model xử lý chúng để tạo vector có số chiều xác định. Document embeddings và query embedding cần cùng embedding space để so khoảng cách có ý nghĩa. (trang 201–204)
+**Keyword search** matches terms in the stored data. **Semantic search** retrieves content based on similarity in an embedding space. For text, a tokenizer breaks input into tokens, including subword units. An embedding model maps them to a fixed-dimensional vector. Query and document vectors must use a compatible embedding space for their distances to be meaningful. (pp. 201–204)
 
-**Oracle AI Vector Search** lưu vector cạnh business data và truy vấn bằng SQL. Một request có thể xếp hạng theo semantic similarity đồng thời lọc theo giá, danh mục hoặc metadata khác. (trang 205)
+**Oracle AI Vector Search** stores vectors alongside relational data. SQL can restrict results to rows that satisfy business predicates, then rank the eligible rows by vector similarity. (pp. 205, 217–222)
 
-## Vector Search workflow
+## Vector Search Data Flow
 
-1. **Generate embeddings.** Guide minh họa ONNX model trong database qua `DBMS_VECTOR.LOAD_ONNX_MODEL` và `VECTOR_EMBEDDING`, cùng hướng dùng external embedding provider. (trang 206–208)
-2. **Chunk và lưu dữ liệu.** Tài liệu dài được tách để phù hợp giới hạn input của model và để retrieval trả về đoạn liên quan. Pipeline có thể dùng `UTL_TO_TEXT → UTL_TO_CHUNKS → UTL_TO_EMBEDDINGS`. Lưu chunk, document ID, vector và metadata cùng nhau. (trang 207–210)
-3. **Tạo index.** Guide giới thiệu HNSW và IVF cho vector search, cùng hybrid vector indexes để kết hợp các kiểu tìm kiếm. (trang 207)
-4. **Search và dùng kết quả.** Tạo query embedding, so khoảng cách bằng `VECTOR_DISTANCE`, lấy top-k, và dùng kết quả làm context cho RAG nếu workflow cần. (trang 207, 211)
+1. **Prepare content.** Extract text and split long documents into chunks that fit the embedding model's input limits. Chunking allows retrieval to return relevant portions of a document.
+2. **Generate embeddings.** An ONNX model loaded with `DBMS_VECTOR.LOAD_ONNX_MODEL` can support in-database embedding through `VECTOR_EMBEDDING`. An external provider can generate embeddings outside the database. Oracle also supports text extraction, chunking, and embedding through `UTL_TO_TEXT`, `UTL_TO_CHUNKS`, and `UTL_TO_EMBEDDINGS`.
+3. **Store and index.** Store embeddings with the source content or its identifier and metadata. HNSW and IVF are vector index types. Hybrid vector indexes support combinations of search methods.
+4. **Retrieve.** Embed the query, score eligible rows, and return the top-k results. Retrieval-Augmented Generation (RAG) can pass those results to the model as context. (pp. 206–211)
 
-Kiểu `VECTOR` có thể khai báo số chiều và format, ví dụ `VECTOR(384, FLOAT32)`. Guide đề cập `FLOAT32`, `FLOAT64`, `INT8` và `BINARY`, cùng dense và sparse vectors. Dense representation lưu đầy đủ phần tử, còn sparse representation lưu vị trí và giá trị của các phần tử khác 0. (trang 210)
+A `VECTOR` column can declare dimensionality and element format. Formats include `FLOAT32`, `FLOAT64`, `INT8`, and `BINARY`. A dense vector stores every position. A sparse vector stores the positions and values of nonzero elements. (p. 210)
 
-| Metric | Giá trị biểu diễn |
+| Metric | Meaning |
 | --- | --- |
-| **Cosine** | Độ khác nhau về hướng của vectors. |
-| **Euclidean (L2)** | Khoảng cách đường thẳng giữa hai vectors. |
-| **Manhattan (L1)** | Tổng chênh lệch tuyệt đối trên từng chiều. |
-| **Dot Product** | Điểm phụ thuộc vào cả hướng và độ lớn của vectors. |
+| **Cosine** | Measures differences in vector direction. |
+| **Euclidean (L2)** | Measures straight-line distance. |
+| **Manhattan (L1)** | Sums absolute differences across dimensions. |
+| **Dot product** | Produces a score that depends on direction and magnitude. |
 
-Với distance metrics, kết quả gần hơn có distance nhỏ hơn. Hướng xếp hạng của inner product cần phù hợp với cách dùng score. Guide minh họa xếp hạng top-k bằng `VECTOR_DISTANCE` với cosine. (trang 211)
+With a distance metric, lower values rank as closer. Dot-product ordering follows the interpretation of the score. **Exact similarity search** evaluates eligible vectors directly with a function such as `VECTOR_DISTANCE`. Relational filtering defines the eligible set, and vector distance determines the ranking within it. (pp. 211, 217–222)
 
-## Oracle AI Vector Search Demo
+## Private Agent Factory
 
-Bài lab dùng `python-oracledb`, `SentenceTransformer` với `all-MiniLM-L6-v2` và một catalog mười sản phẩm. Trong setup, bảng chứa tên, mô tả, giá, danh mục và embedding 384 chiều. Ingestion tạo embedding cho từng mô tả và bind vector float32 khi insert. Query text cũng được encode bằng cùng model. (trang 212–216)
+**Oracle AI Database Private Agent Factory** provides pre-built agents, a visual workflow builder, and enterprise data integrations. Single Sign-On (SSO), role-based access, and prompt guardrails support governance. Its container-based architecture can use Podman and connects to Oracle AI Database and a model provider. (pp. 223–225)
 
-| Truy vấn | Cách xử lý |
+| Component | Data and execution model |
 | --- | --- |
-| Tìm dụng cụ tập luyện ở nhà | So cosine distance với các hàng trong catalog rồi lấy top 3. Slide minh họa đưa ra Yoga Mat, Fitness Tracker và Basketball. |
-| Tìm đồ bảo hộ cho water sports dưới 100 USD | Lọc bằng `WHERE price < 100`, xếp hạng những hàng còn lại theo cosine distance rồi lấy top 5. |
+| **Knowledge Agent** | Uses embeddings to retrieve approved documents from sources such as files, SharePoint, websites, or OCI Object Storage. Answers can link to supporting material. |
+| **Data Analysis Agent** | Generates and executes SQL against accessible tables and views, then presents results or visualizations. |
+| **Agent Builder** | Defines workflows as visual nodes that can connect tools, MCP integrations, custom Python components, and multiple agents. |
 
-Ví dụ đầu minh họa exact similarity search. Ví dụ sau kết hợp vector ranking và điều kiện quan hệ trong cùng SQL query. (trang 217–222) [Lab Vector Search và kết quả mẫu](../labs/README.md#vector-search-comparison-with-the-guide)
+The connected sources and permissions determine the data available to these agents. (pp. 226–228)
 
-## Oracle AI Database Private Agent Factory
+## Select AI Agent
 
-**Private Agent Factory** cung cấp pre-built agents, visual builder, kết nối enterprise data và các kiểm soát như SSO, role-based access và prompt guardrails. Guide mô tả application chạy dạng container với Podman, có thể deploy on-premises hoặc trên cloud khi kết nối được đến Oracle AI Database và model provider cần dùng. (trang 223–225)
+**Select AI Agent** coordinates agent workflows near data in Oracle AI Database. An **AI profile** supplies model configuration and data context. `DBMS_CLOUD_AI_AGENT` defines agents, tools, tasks, and teams. The database can enforce role-based access, Virtual Private Database (VPD) policies, and auditing where data is accessed. (pp. 229–231)
 
-- **Knowledge Agent** kết nối nguồn như file, SharePoint, websites hoặc OCI Object Storage. Tài liệu được vectorize để phục vụ truy xuất theo ngữ nghĩa. Câu trả lời có thể dẫn tới nội dung nguồn. (trang 226)
-- **Data Analysis Agent** hiểu tables và views mà nó được phép dùng, tạo và chạy SQL từ câu hỏi tự nhiên, rồi trình bày dữ liệu hoặc visualization. Guide cũng minh họa follow-up questions dựa trên dữ liệu. (trang 227)
-- **Agent Builder** ghép nodes trong visual workflow. Có thể thêm tools, MCP integrations, Python custom components và multi-agent orchestration. (trang 228)
-
-## Oracle Select AI Agent Framework
-
-Select AI Agent đặt agent workflow gần database data. AI profile cung cấp cấu hình model và context. `DBMS_CLOUD_AI_AGENT` dùng để định nghĩa các thành phần như agents, tools, tasks và teams. Quyền dữ liệu, role-based access, Virtual Private Database (VPD) và audit có thể được áp dụng ở lớp database. (trang 229–231)
-
-Workflow gồm **Planning** để chọn các bước, **Tool Use** để chạy hành động, **Reflection** để kiểm tra kết quả và điều chỉnh kế hoạch, và **Memory Management** để giữ context qua các lượt. Tools trong Guide gồm built-in RAG và NL2SQL, custom PL/SQL functions, và external REST integrations. (trang 232–233)
-
-Trong **Customer Return Agent**, NL2SQL tìm đơn 5821 và lấy dữ kiện để kiểm tra return window 30 ngày. Sau khi đơn đủ điều kiện, custom PL/SQL tool cập nhật trạng thái. Agent đọc kết quả cập nhật trước khi xác nhận với người dùng. (trang 234) [Kết quả lab mô phỏng](../labs/sample-results/customer-return-local.json)
+**Planning** selects the steps, **Tool Use** executes actions, **Reflection** evaluates the results, and **Memory Management** retains relevant context across turns. Tools can retrieve context through RAG, convert natural language into SQL through **NL2SQL**, run custom PL/SQL operations, or call external REST integrations. (pp. 232–234)
 
 ## Autonomous AI Database MCP Server
 
-Guide mô tả **Autonomous AI Database MCP Server** là tính năng managed, multi-tenant, tích hợp trong Autonomous AI Database Serverless. MCP client đi qua HTTPS với Streamable HTTP tới endpoint ứng với region và database OCID. Server expose Select AI Agent tools, ví dụ NL2SQL, RAG và custom PL/SQL. (trang 235–236, 239–240)
+**Autonomous AI Database MCP Server** is a managed, multi-tenant capability of Autonomous AI Database Serverless. An MCP client uses Streamable HTTP over HTTPS to reach the endpoint for a region and database OCID. The server exposes Select AI Agent tools such as NL2SQL, RAG, and custom PL/SQL. (pp. 235–236, 239–240)
 
-Database credentials xác định caller. Database roles và policies chi phối tool access và dữ liệu được trả về. Với NL2SQL, AI profile có schema metadata để giảm việc khám phá schema trong mỗi lượt. Flow này đưa vector search, database agents và MCP tools vào cùng kiến trúc dữ liệu. (trang 237–241)
+Database credentials identify the caller, and database roles and policies govern the tools and data that caller can access. An AI profile can supply schema metadata to NL2SQL, reducing schema discovery during the request. MCP provides the discovery and invocation interface across this boundary. (pp. 237–241) [MCP connection lifecycle](03-introduction-to-mcp.md#connection-lifecycle-and-json-rpc-20)
