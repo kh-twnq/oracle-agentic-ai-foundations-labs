@@ -4,7 +4,7 @@ Tài liệu học và lab thực hành theo Oracle Agentic AI Foundations Worksh
 
 | Thư mục | Nội dung |
 | --- | --- |
-| [study-notes/](study-notes/README.md) | Ghi chú tiếng Việt và sơ đồ cho 6 mô-đun, gồm bản tóm tắt toàn mô-đun LangChain. |
+| [study-notes/](study-notes/README.md) | Bản tóm tắt tiếng Việt và sơ đồ cho toàn bộ 6 Module, kèm số trang trong Student Guide. |
 | [labs/](labs/README.md) | Hướng dẫn chạy, local fixtures, Oracle AI Vector Search, Customer Return Agent và kết quả mẫu. |
 | [Mã lab Oracle University](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations) | Các ví dụ LangChain, MCP, OpenAI và OCI gốc. Git submodule lấy đúng commit dùng trong workshop. |
 
