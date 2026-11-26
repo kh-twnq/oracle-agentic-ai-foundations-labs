@@ -1,59 +1,73 @@
 # Introduction to MCP
 
-Module 3 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 91–121 · [Index](README.md)
+*Giới thiệu về MCP*
+
+Module 3 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), tr. 91–121 · [Mục lục](README.md)
 
 ## Agenda
 
-1. [What is Model Context Protocol?](#1-what-is-model-context-protocol)
-2. [MCP Core Components](#2-mcp-core-components)
-3. [Add MCP Server to your first Agent](#3-add-mcp-server-to-your-first-agent)
-4. [Real World MCP Walkthrough](#4-real-world-mcp-walkthrough)
+*Nội dung học*
 
-Student Guide agenda, p. 92.
+1. [Model Context Protocol là gì?](#1-what-is-model-context-protocol)
+2. [Các thành phần cốt lõi của MCP](#2-mcp-core-components)
+3. [Thêm MCP server vào agent đầu tiên](#3-add-mcp-server-to-your-first-agent)
+4. [Ví dụ MCP trong thực tế](#4-real-world-mcp-walkthrough)
 
-[Module Review](#module-review) covers variations of all five quiz questions.
+Nội dung theo chương trình học ở tr. 92 của Student Guide.
 
-## 1. What is Model Context Protocol?
+[Ôn tập module](#module-review) bao gồm các biến thể của cả năm câu hỏi kiểm tra.
 
-**Model Context Protocol (MCP) is an open standard that connects AI applications to external tools, data sources, and systems.** For tools, **MCP standardizes how a client discovers what a server offers and calls a specific tool**. A Java host can call a Python MCP server through the same protocol.
+<a name="1-what-is-model-context-protocol"></a>
 
-The host still coordinates the agent loop. The server can call an existing REST API inside a tool handler, as in the OCI example below.
+## 1. Model Context Protocol là gì?
 
-Anthropic introduced MCP in November 2024. The project is part of the Linux Foundation's Agentic AI Foundation. (pp. 93–94)
+**Model Context Protocol (MCP) là một chuẩn mở để kết nối ứng dụng AI với các tool, nguồn dữ liệu và hệ thống bên ngoài.** Với tool, **MCP chuẩn hóa cách client tìm hiểu server cung cấp những gì và gọi một tool cụ thể**. Một host viết bằng Java có thể gọi MCP server viết bằng Python qua cùng giao thức.
+
+Host vẫn điều phối vòng lặp của agent. Khi xử lý lời gọi tool, server có thể gọi một REST API hiện có, như trong ví dụ OCI bên dưới.
+
+Anthropic giới thiệu MCP vào tháng 11 năm 2024. Dự án thuộc Agentic AI Foundation của Linux Foundation. (tr. 93–94)
 
 ### The integration problem
 
-| Integration model | Cost for N applications and M services | 3 applications and 4 services |
+*Bài toán tích hợp*
+
+| Mô hình tích hợp | Số lượng cần triển khai cho N ứng dụng và M dịch vụ | 3 ứng dụng và 4 dịch vụ |
 | --- | --- | --- |
-| Pairwise connectors | Up to `N × M` adapters, one per application–service pair. | 12 adapters |
-| Shared MCP protocol | `N + M` protocol integrations, one per application or service. | 7 integrations |
+| Kết nối theo từng cặp | Tối đa `N × M` adapter, mỗi cặp ứng dụng và dịch vụ dùng một adapter. | 12 adapter |
+| Dùng chung giao thức MCP | `N + M` tích hợp giao thức, mỗi ứng dụng hoặc dịch vụ tích hợp một lần. | 7 tích hợp |
 
-**`N + M` counts protocol implementations.** A host still needs a client connection for each server it uses. (pp. 95–96)
+**`N + M` là số phần triển khai giao thức.** Host vẫn cần một kết nối client cho mỗi server mà nó sử dụng. (tr. 95–96)
 
-## 2. MCP Core Components
+<a name="2-mcp-core-components"></a>
 
-| Role | Responsibility |
+## 2. Các thành phần cốt lõi của MCP
+
+| Vai trò | Trách nhiệm |
 | --- | --- |
-| **Host** | Runs the AI application, coordinates the model, and manages MCP clients. |
-| **MCP client** | Handles protocol communication with one server. |
-| **MCP server** | Publishes capabilities, **executes the tools it provides**, and returns their results. |
+| **Host** | Chạy ứng dụng AI, điều phối mô hình và quản lý các MCP client. |
+| **MCP client** | Trao đổi thông điệp theo giao thức với một server. |
+| **MCP server** | Công bố các khả năng được hỗ trợ, **thực thi những tool do nó cung cấp** và trả kết quả. |
 
-A server can expose **Tools** for actions, **Resources** for URI-addressed data, and **Prompts** for reusable templates. The host decides how to present available capabilities to the model and the user. (pp. 96–98)
+Server có thể cung cấp **Tools** để thực hiện hành động, **Resources** cho dữ liệu có địa chỉ URI và **Prompts** cho các mẫu có thể dùng lại. Host quyết định cách cung cấp những khả năng hiện có cho mô hình và người dùng. (tr. 96–98)
 
-### Connection lifecycle
+<a name="connection-lifecycle"></a>
 
-1. **Initialize.** The client uses `initialize` to negotiate a protocol version and exchange capabilities with the server. The client then sends an initialized notification.
-2. **Discover.** **`tools/list` returns tool names, descriptions, and `inputSchema` definitions.** Resources and prompts have their own discovery methods.
-3. **Operate.** **The client uses `tools/call` to invoke a specific tool by name with its arguments.** The server runs the tool and returns the result.
-4. **Shutdown.** The client closes the connection. (pp. 99–102)
+### Vòng đời kết nối
 
-A client can subscribe to resource updates with `resources/subscribe` if the server supports subscriptions. When that resource changes, the server can send `notifications/resources/updated`.
+1. **Khởi tạo.** Client dùng `initialize` để thỏa thuận phiên bản giao thức và trao đổi thông tin về các khả năng được hỗ trợ với server. Sau đó client gửi thông báo đã khởi tạo xong.
+2. **Khám phá.** **`tools/list` trả về tên, mô tả và định nghĩa `inputSchema` của các tool.** Resource và prompt có phương thức khám phá riêng.
+3. **Vận hành.** **Client dùng `tools/call` để gọi một tool cụ thể theo tên và truyền các đối số.** Server chạy tool rồi trả kết quả.
+4. **Kết thúc.** Client đóng kết nối. (tr. 99–102)
 
-### Tool input schema
+Nếu server hỗ trợ đăng ký theo dõi, client có thể dùng `resources/subscribe` để nhận cập nhật của một resource. Khi resource đó thay đổi, server có thể gửi `notifications/resources/updated`.
 
-**`inputSchema` is the JSON Schema for a tool's arguments.** It describes the expected structure, field types, required fields, and any declared constraints. The client can use it to construct valid tool requests.
+<a name="tool-input-schema"></a>
 
-For example, `get_order` can declare that `order_id` is a string and must be present.
+### Schema đầu vào của tool
+
+**`inputSchema` là JSON Schema của các đối số mà tool nhận.** Nó mô tả cấu trúc dự kiến, kiểu dữ liệu của các trường, trường bắt buộc và các ràng buộc đã khai báo. Client có thể dùng schema này để tạo yêu cầu gọi tool hợp lệ.
+
+Ví dụ, `get_order` có thể khai báo rằng `order_id` là một chuỗi bắt buộc.
 
 ```json
 {
@@ -67,7 +81,7 @@ For example, `get_order` can declare that `order_id` is a string and must be pre
 }
 ```
 
-The client then sends actual values in the `arguments` field of the `tools/call` parameters.
+Sau đó client gửi các giá trị thực tế trong trường `arguments` của tham số `tools/call`.
 
 ```json
 {
@@ -78,83 +92,101 @@ The client then sends actual values in the `arguments` field of the `tools/call`
 }
 ```
 
-Connection configuration determines transport and authentication. Deployment determines where the server runs.
+Cấu hình kết nối xác định cơ chế truyền tải và xác thực. Cách triển khai xác định nơi server chạy.
 
 ### Messages and transports
 
-MCP uses **JSON-RPC 2.0** to structure messages. A request has a `method` and optional `params`. A request ID correlates the request with its result or error response. A notification omits the ID. Tool results can include a `content` field. (pp. 100–102)
+*Thông điệp và cơ chế truyền tải*
 
-| Transport | Communication channel |
+MCP dùng **JSON-RPC 2.0** để định dạng thông điệp. Một yêu cầu có `method` và có thể có `params`. ID yêu cầu dùng để ghép yêu cầu với phản hồi kết quả hoặc lỗi. Thông báo không có ID. Kết quả tool có thể chứa trường `content`. (tr. 100–102)
+
+| Cơ chế truyền tải | Kênh giao tiếp |
 | --- | --- |
-| **stdio** | A local process exchanges messages with the client through standard input and output. |
-| **Streamable HTTP** | A client sends HTTP requests to an endpoint. Responses can use Server-Sent Events (SSE), and the service can require HTTP authentication. |
+| **stdio** | Một tiến trình cục bộ trao đổi thông điệp với client qua đầu vào và đầu ra chuẩn. |
+| **Streamable HTTP** | Client gửi yêu cầu HTTP tới một endpoint. Phản hồi có thể dùng Server-Sent Events (SSE). Dịch vụ có thể yêu cầu xác thực HTTP. |
 
-**JSON-RPC defines the message structure. The transport carries the messages.** Tool discovery and invocation serve the same purpose on either transport. (p. 103)
+**JSON-RPC định nghĩa cấu trúc thông điệp. Cơ chế truyền tải chuyển các thông điệp đó.** Việc khám phá và gọi tool có cùng mục đích trên cả hai cơ chế truyền tải. (tr. 103)
 
-## 3. Add MCP Server to your first Agent
+<a name="3-add-mcp-server-to-your-first-agent"></a>
 
-Moving a local tool to MCP changes where the tool handler runs. The model can propose a tool call. The host coordinates the agent loop, and the MCP client sends the request. **The MCP server runs the tool handler and returns the result.** (pp. 104–115)
+## 3. Thêm MCP server vào agent đầu tiên
 
-![The MCP client sends the request. The server executes the tool and returns the result.](images/03-mcp-tool-layer.png)
+Chuyển một tool cục bộ sang MCP làm thay đổi nơi chạy hàm xử lý của tool. Mô hình có thể đề xuất một lời gọi tool. Host điều phối vòng lặp của agent và MCP client gửi yêu cầu. **MCP server chạy hàm xử lý của tool rồi trả kết quả.** (tr. 104–115)
 
-`FastMCP` can expose functions registered with `@mcp.tool()`. **`MultiServerMCPClient` manages independent connections to the configured servers. Its `get_tools()` method combines the discovered tools into one list the LangChain agent can use.**
+![MCP client gửi yêu cầu. Server thực thi tool rồi trả kết quả.](images/03-mcp-tool-layer.png)
 
-For example, the agent can see `get_order` from the Orders server and `check_stock` from the Inventory server. A call to `get_order` goes to the Orders server. The servers run independently and expose their own tools.
+`FastMCP` có thể cung cấp các hàm đã đăng ký bằng `@mcp.tool()`. **`MultiServerMCPClient` quản lý các kết nối độc lập tới những server đã cấu hình. Phương thức `get_tools()` gộp các tool tìm được thành một danh sách để agent LangChain sử dụng.**
 
-Direct calls suit simple local logic. An MCP interface helps when multiple applications share the same tools or when another service owns the implementation. (pp. 107–115, 121)
+Ví dụ, agent có thể thấy `get_order` từ server Orders và `check_stock` từ server Inventory. Lời gọi `get_order` được gửi đến server Orders. Các server hoạt động độc lập và cung cấp các tool riêng.
 
-## 4. Real World MCP Walkthrough
+Gọi trực tiếp phù hợp với logic cục bộ đơn giản. Giao diện MCP hữu ích khi nhiều ứng dụng dùng chung tool hoặc khi phần triển khai do một dịch vụ khác quản lý. (tr. 107–115, 121)
 
-A server can receive an MCP request through one transport and call a downstream service through another. OCI Usage MCP Server illustrates this boundary. (pp. 116–120)
+<a name="4-real-world-mcp-walkthrough"></a>
+
+## 4. Ví dụ MCP trong thực tế
+
+Server có thể nhận yêu cầu MCP qua một cơ chế truyền tải và gọi dịch vụ phía sau qua cơ chế khác. OCI Usage MCP Server minh họa ranh giới này. (tr. 116–120)
 
 **MCP client → stdio → OCI Usage MCP Server → HTTPS → OCI Usage REST API**
 
-The MCP server uses an OCI configuration profile to authenticate the downstream request. `get_summarized_usage` accepts a tenancy, time range, `granularity`, `group_by`, and `query_type`. These fields belong to the OCI tool. The client discovers and invokes it through the same MCP interface used for other tools. (pp. 118–121)
+MCP server dùng một hồ sơ cấu hình OCI để xác thực yêu cầu gửi tới dịch vụ phía sau. `get_summarized_usage` nhận tenancy, khoảng thời gian, `granularity`, `group_by` và `query_type`. Các trường này thuộc về tool của OCI. Client khám phá và gọi tool qua cùng giao diện MCP dùng cho các tool khác. (tr. 118–121)
 
-## Module Review
+<a name="module-review"></a>
+
+## Ôn tập module
 
 ### Q1. MCP as a standardized tool execution layer
 
-See [What is Model Context Protocol?](#1-what-is-model-context-protocol).
+*Câu 1. MCP là lớp chuẩn hóa cách gọi và thực thi tool*
 
-- **Why is MCP called a standardized tool execution layer?** It gives AI applications a common way to discover and invoke tools exposed by external servers.
-- **What does `N + M` count?** It counts integrations with the shared protocol. Each of the N applications implements the client side, and each of the M services implements the server side. A running host still connects to the servers it uses.
-- **Can a Java application call a Python MCP tool?** Yes. The Java client and Python server communicate through the same protocol, while the Python server executes its own tool handler.
-- **How can REST and MCP appear in the same workflow?** The agent's client uses MCP to invoke a tool. The tool handler can use REST to call an existing service.
-- **What happens to the agent loop after you add MCP?** The host still coordinates the model, tool calls, and results. MCP supplies the interface for calls to external tool servers.
+Xem [Model Context Protocol là gì?](#1-what-is-model-context-protocol).
+
+- **Vì sao MCP được gọi là lớp chuẩn hóa cách gọi và thực thi tool?** MCP cung cấp cho các ứng dụng AI một cách chung để khám phá và gọi tool do các server bên ngoài cung cấp.
+- **`N + M` đếm những gì?** Đó là số tích hợp với giao thức chung. Mỗi ứng dụng trong N ứng dụng triển khai phía client. Mỗi dịch vụ trong M dịch vụ triển khai phía server. Khi chạy, host vẫn kết nối tới những server mà nó sử dụng.
+- **Ứng dụng Java có thể gọi một MCP tool viết bằng Python không?** Có. Client Java và server Python giao tiếp qua cùng giao thức. Server Python thực thi hàm xử lý tool của nó.
+- **REST và MCP có thể xuất hiện trong cùng một workflow như thế nào?** Client của agent dùng MCP để gọi tool. Hàm xử lý tool có thể dùng REST để gọi một dịch vụ hiện có.
+- **Vòng lặp của agent thay đổi thế nào sau khi thêm MCP?** Host vẫn điều phối mô hình, các lời gọi tool và kết quả. MCP cung cấp giao diện để gọi các server tool bên ngoài.
 
 ### Q2. Tool discovery and invocation
 
-See [Connection lifecycle](#connection-lifecycle).
+*Câu 2. Khám phá và gọi tool*
 
-- **What does `tools/call` do?** It requests execution of one tool by name and passes the arguments for that call.
-- **Which method tells you what tools and arguments are available?** `tools/list` returns the tool definitions, including their `inputSchema`.
-- **When is the protocol version negotiated?** During `initialize`, before normal discovery and invocation.
-- **How can a client learn that a resource changed?** If the server supports subscriptions, the client can use `resources/subscribe` and receive `notifications/resources/updated` when the resource changes.
+Xem [Vòng đời kết nối](#connection-lifecycle).
+
+- **`tools/call` làm gì?** Nó yêu cầu thực thi một tool theo tên và truyền đối số cho lần gọi đó.
+- **Phương thức nào cho biết có những tool và đối số nào?** `tools/list` trả về các định nghĩa tool, bao gồm `inputSchema` của chúng.
+- **Khi nào phiên bản giao thức được thỏa thuận?** Trong bước `initialize`, trước khi bắt đầu khám phá hoặc gọi tool.
+- **Client làm sao biết một resource đã thay đổi?** Nếu server hỗ trợ đăng ký theo dõi, client có thể dùng `resources/subscribe` và nhận `notifications/resources/updated` khi resource thay đổi.
 
 ### Q3. Understanding `inputSchema`
 
-See [Tool input schema](#tool-input-schema).
+*Câu 3. Hiểu `inputSchema`*
 
-- **What does `inputSchema` describe?** The expected structure and types of tool arguments, including any required fields or other declared constraints.
-- **How do you know whether `order_id` is mandatory?** Check whether it appears in `required`. Declaring it as a string under `properties` specifies its type.
-- **What is the difference between `inputSchema` and `arguments`?** The schema defines the expected input. `arguments` contains the actual values for a specific call, such as `{"order_id":"ORD-42"}`.
-- **Where are authentication, transport, and tool location determined?** Authentication and transport come from the connection configuration. Tool location comes from deployment.
+Xem [Schema đầu vào của tool](#tool-input-schema).
+
+- **`inputSchema` mô tả điều gì?** Cấu trúc và kiểu dữ liệu dự kiến của các đối số, gồm các trường bắt buộc và những ràng buộc khác đã khai báo.
+- **Làm sao biết `order_id` có bắt buộc hay không?** Kiểm tra trường này có xuất hiện trong `required` hay không. Khai báo nó là chuỗi trong `properties` xác định kiểu dữ liệu của nó.
+- **`inputSchema` và `arguments` khác nhau thế nào?** Schema định nghĩa đầu vào dự kiến. `arguments` chứa các giá trị thực tế của một lần gọi cụ thể, chẳng hạn `{"order_id":"ORD-42"}`.
+- **Xác thực, cơ chế truyền tải và vị trí của tool được xác định ở đâu?** Cấu hình kết nối xác định xác thực và cơ chế truyền tải. Cách triển khai xác định vị trí của tool.
 
 ### Q4. Who does what in a tool call?
 
-See [MCP Core Components](#2-mcp-core-components) and [Add MCP Server to your first Agent](#3-add-mcp-server-to-your-first-agent).
+*Câu 4. Mỗi thành phần làm gì khi gọi tool?*
 
-- **Which component runs the actual tool implementation?** The MCP server executes the tool handler and returns its result.
-- **What is the role of each component in the call?** The model can propose a call. The host coordinates it. The MCP client sends the request. The MCP server executes the handler.
-- **What is the difference between JSON-RPC and Streamable HTTP?** JSON-RPC structures the messages. Streamable HTTP is one way to carry them. An MCP client and server can also exchange messages over stdio.
-- **Who calls a downstream API?** The server-side handler can call it as part of executing the tool. In the OCI example, the MCP server sends the request to the OCI Usage REST API.
+Xem [Các thành phần cốt lõi của MCP](#2-mcp-core-components) và [Thêm MCP server vào agent đầu tiên](#3-add-mcp-server-to-your-first-agent).
+
+- **Thành phần nào chạy phần triển khai thực tế của tool?** MCP server thực thi hàm xử lý tool và trả kết quả.
+- **Từng thành phần có vai trò gì trong lời gọi?** Mô hình có thể đề xuất lời gọi. Host điều phối. MCP client gửi yêu cầu. MCP server thực thi hàm xử lý.
+- **JSON-RPC và Streamable HTTP khác nhau thế nào?** JSON-RPC định dạng thông điệp. Streamable HTTP là một cách truyền các thông điệp đó. MCP client và server cũng có thể trao đổi thông điệp qua stdio.
+- **Thành phần nào gọi API của dịch vụ phía sau?** Hàm xử lý ở phía server có thể gọi API đó khi chạy tool. Trong ví dụ OCI, MCP server gửi yêu cầu tới OCI Usage REST API.
 
 ### Q5. One agent, multiple MCP servers
 
-See [Add MCP Server to your first Agent](#3-add-mcp-server-to-your-first-agent).
+*Câu 5. Một agent dùng nhiều MCP server*
 
-- **Why can one agent use tools from multiple servers?** `MultiServerMCPClient` manages independent connections to the configured servers and exposes their discovered tools through `get_tools()`.
-- **Where does a tool call go after the lists are combined?** It goes to the server that exposed the selected tool. `get_order` goes to the Orders server, while `check_stock` goes to the Inventory server.
-- **Do the servers have to share a process or tool names?** Each server can run independently and expose its own tools. The adapter combines the tool definitions for the agent.
-- **Is `MultiServerMCPClient` part of the MCP specification?** It is a LangChain adapter. Each underlying client–server interaction uses MCP.
+Xem [Thêm MCP server vào agent đầu tiên](#3-add-mcp-server-to-your-first-agent).
+
+- **Vì sao một agent có thể dùng tool từ nhiều server?** `MultiServerMCPClient` quản lý các kết nối độc lập tới những server đã cấu hình và cung cấp các tool tìm được qua `get_tools()`.
+- **Sau khi gộp các danh sách, lời gọi tool được gửi đi đâu?** Lời gọi được chuyển đến server đã công bố tool được chọn. `get_order` được gửi đến server Orders, còn `check_stock` được gửi đến server Inventory.
+- **Các server có phải dùng chung tiến trình hoặc tên tool không?** Mỗi server có thể chạy độc lập và cung cấp các tool riêng. Adapter gộp các định nghĩa tool cho agent sử dụng.
+- **`MultiServerMCPClient` có thuộc đặc tả MCP không?** Đây là một adapter của LangChain. Mỗi tương tác giữa client và server bên dưới vẫn dùng MCP.

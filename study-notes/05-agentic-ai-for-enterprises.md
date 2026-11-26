@@ -1,75 +1,91 @@
 # Agentic AI for Enterprises
 
-Module 5 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 163–195 · [Index](README.md)
+*Agentic AI cho doanh nghiệp*
+
+Module 5 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), tr. 163–195 · [Mục lục](README.md)
 
 ## Agenda
 
-1. [Need for Agent Lifecycle and Runtime](#1-need-for-agent-lifecycle-and-runtime)
-2. [Introduction to OCI Enterprise AI Platform](#2-introduction-to-oci-enterprise-ai-platform)
-3. [Introduction to OCI Enterprise AI Agents](#3-introduction-to-oci-enterprise-ai-agents)
-4. [OCI Enterprise AI Agents Building Blocks](#4-oci-enterprise-ai-agents-building-blocks)
-5. [Getting Started with OCI Enterprise AI Agents](#5-getting-started-with-oci-enterprise-ai-agents)
-6. [OCI Enterprise AI Agents – Deploy and Scale](#6-oci-enterprise-ai-agents--deploy-and-scale)
+*Nội dung học*
 
-Student Guide agenda, p. 164.
+1. [Vì sao cần quản lý vòng đời và runtime của agent?](#1-need-for-agent-lifecycle-and-runtime)
+2. [Giới thiệu về nền tảng OCI Enterprise AI](#2-introduction-to-oci-enterprise-ai-platform)
+3. [Giới thiệu về OCI Enterprise AI Agents](#3-introduction-to-oci-enterprise-ai-agents)
+4. [Các thành phần của OCI Enterprise AI Agents](#4-oci-enterprise-ai-agents-building-blocks)
+5. [Bắt đầu với OCI Enterprise AI Agents](#5-getting-started-with-oci-enterprise-ai-agents)
+6. [Triển khai và mở rộng OCI Enterprise AI Agents](#6-oci-enterprise-ai-agents--deploy-and-scale)
 
-## 1. Need for Agent Lifecycle and Runtime
+Nội dung theo chương trình học ở tr. 164 của Student Guide.
 
-**Agent logic** decides what the agent should do. The **Agent Runtime** provides the environment in which that logic runs. The **application** submits inputs and consumes results. The lifecycle includes development, testing, deployment, operation, and revision. (pp. 165–168)
+<a name="1-need-for-agent-lifecycle-and-runtime"></a>
 
-| Runtime capability | Responsibility |
+## 1. Vì sao cần quản lý vòng đời và runtime của agent?
+
+**Logic của agent** quyết định agent nên làm gì. **Runtime của agent** cung cấp môi trường để chạy logic đó. **Ứng dụng** gửi đầu vào và sử dụng kết quả. Vòng đời gồm phát triển, kiểm thử, triển khai, vận hành và chỉnh sửa. (tr. 165–168)
+
+| Khả năng của runtime | Trách nhiệm |
 | --- | --- |
-| Request handling | Accept, authenticate, rate-limit, and route requests. |
-| Execution environment | Run the agent on a server, in a container, or in a serverless environment. |
-| Orchestration and state | Coordinate steps, sessions, memory, and retries. |
-| Tool sandbox | Isolate execution and limit resources. |
-| Integrations | Manage API and database connections and credentials. |
-| Scaling and reliability | Handle demand, load balancing, and failover. |
-| Observability | Collect logs, metrics, and traces. |
+| Xử lý yêu cầu | Tiếp nhận, xác thực, giới hạn tần suất và định tuyến yêu cầu. |
+| Môi trường thực thi | Chạy agent trên máy chủ, trong container hoặc trong môi trường serverless. |
+| Điều phối và trạng thái | Điều phối các bước, phiên, bộ nhớ và các lần thử lại. |
+| Sandbox cho tool | Cô lập quá trình thực thi và giới hạn tài nguyên. |
+| Tích hợp | Quản lý kết nối đến API và cơ sở dữ liệu, cùng thông tin xác thực. |
+| Mở rộng và độ tin cậy | Đáp ứng nhu cầu tải, cân bằng tải và chuyển đổi dự phòng khi có lỗi. |
+| Khả năng quan sát | Thu thập log, số liệu đo lường và trace. |
 
-A team can operate these components directly or use a managed runtime. The application team defines the instructions, permissions, and business rules. (pp. 169–171, 178–181)
+Nhóm có thể tự vận hành các thành phần này hoặc dùng runtime được quản lý. Nhóm phụ trách ứng dụng xác định chỉ dẫn, quyền và quy tắc nghiệp vụ. (tr. 169–171, 178–181)
 
-## 2. Introduction to OCI Enterprise AI Platform
+<a name="2-introduction-to-oci-enterprise-ai-platform"></a>
 
-OCI Enterprise AI combines **Models** for processing information, **Agents** for orchestration and execution, and **Governance** for controlling access and behavior. (pp. 172–177)
+## 2. Giới thiệu về nền tảng OCI Enterprise AI
 
-![OCI Enterprise AI combines Models, Agents, and Governance.](images/05-oci-enterprise-ai.png)
+OCI Enterprise AI kết hợp **mô hình (Models)** để xử lý thông tin, **agent (Agents)** để điều phối và thực thi, cùng **quản trị (Governance)** để kiểm soát quyền truy cập và hành vi. (tr. 172–177)
 
-| Model type | Main function |
+![OCI Enterprise AI kết hợp mô hình, agent và quản trị.](images/05-oci-enterprise-ai.png)
+
+| Loại mô hình | Chức năng chính |
 | --- | --- |
-| **Chat** | Generates a response or proposes a tool call. |
-| **Embed** | Converts input to a vector used for retrieval. |
-| **Rerank** | Scores previously retrieved candidates and reorders them by relevance. |
+| **Chat** | Tạo phản hồi hoặc đề xuất một lời gọi tool. |
+| **Embed** | Chuyển đầu vào thành vector dùng để truy xuất. |
+| **Rerank** | Chấm điểm các kết quả đã truy xuất và sắp xếp lại theo mức độ liên quan. |
 
-**On-Demand** draws on shared capacity and suits variable usage. **Dedicated AI Cluster** reserves capacity for a tenancy and suits workloads that require isolation, predictable latency, or eligible custom models. The two options have different capacity and cost commitments. (pp. 174–176)
+**On-Demand** sử dụng tài nguyên xử lý dùng chung và phù hợp khi mức sử dụng thay đổi. **Dedicated AI Cluster** dành riêng năng lực xử lý cho một tenancy. Lựa chọn này phù hợp với tải công việc cần môi trường cô lập, độ trễ có thể dự đoán hoặc mô hình tùy chỉnh đủ điều kiện. Hai lựa chọn có cam kết khác nhau về năng lực xử lý và chi phí. (tr. 174–176)
 
-Network controls include Private Endpoints and Zero Trust Packet Routing (ZPR). Identity and Access Management (IAM) policies govern resource access. Guardrails address content moderation, prompt injection, and personally identifiable information (PII). (p. 177)
+Các biện pháp kiểm soát mạng gồm Private Endpoints và Zero Trust Packet Routing (ZPR). Chính sách Identity and Access Management (IAM) quản lý quyền truy cập tài nguyên. Guardrail hỗ trợ kiểm duyệt nội dung và xử lý prompt injection cũng như thông tin nhận dạng cá nhân (PII). (tr. 177)
 
-## 3. Introduction to OCI Enterprise AI Agents
+<a name="3-introduction-to-oci-enterprise-ai-agents"></a>
 
-OCI Enterprise AI Agents offers two managed paths for running agent workloads. (pp. 178–181)
+## 3. Giới thiệu về OCI Enterprise AI Agents
 
-| Option | Where does application logic run? | What does OCI provide? |
+OCI Enterprise AI Agents cung cấp hai cách chạy tải công việc của agent trên dịch vụ được quản lý. (tr. 178–181)
+
+| Lựa chọn | Logic ứng dụng chạy ở đâu? | OCI cung cấp gì? |
 | --- | --- | --- |
-| **OCI Responses API** | In the application team's own environment. | A managed API for models, supported tools, and conversation state. |
-| **Hosted Agentic Apps** | In a container hosted by OCI. | An application endpoint and managed infrastructure according to the deployment configuration. |
+| **OCI Responses API** | Trong môi trường riêng của nhóm phụ trách ứng dụng. | API được quản lý cho mô hình, các tool được hỗ trợ và trạng thái hội thoại. |
+| **Hosted Agentic Apps** | Trong container chạy trên hạ tầng do OCI quản lý. | Một endpoint cho ứng dụng và hạ tầng được quản lý theo cấu hình triển khai. |
 
-## 4. OCI Enterprise AI Agents Building Blocks
+<a name="4-oci-enterprise-ai-agents-building-blocks"></a>
 
-OCI Responses API offers an OpenAI-compatible interface for model routing, tool reasoning, and state management. File Search retrieves document content. Code Interpreter runs Python in a sandbox. Function Calling requests an application-provided function, and MCP Calling connects to an MCP server. (pp. 182–184)
+## 4. Các thành phần của OCI Enterprise AI Agents
 
-| State or memory feature | Scope |
+OCI Responses API cung cấp giao diện tương thích OpenAI để định tuyến đến mô hình, suy luận về cách dùng tool và quản lý trạng thái. File Search truy xuất nội dung tài liệu. Code Interpreter chạy Python trong sandbox. Function Calling yêu cầu gọi hàm do ứng dụng cung cấp. MCP Calling kết nối với MCP server. (tr. 182–184)
+
+| Tính năng trạng thái hoặc bộ nhớ | Phạm vi |
 | --- | --- |
-| **Short-term memory** | Context across turns in one conversation, managed through the Conversations API. |
-| **Long-term memory** | Context across sessions associated with a `subject_id` in a project. |
-| **Context compaction** | A shorter representation of long history that reduces the context the model processes. |
+| **Bộ nhớ ngắn hạn** | Ngữ cảnh qua nhiều lượt trong cùng một cuộc hội thoại, được quản lý qua Conversations API. |
+| **Bộ nhớ dài hạn** | Ngữ cảnh qua nhiều phiên, gắn với một `subject_id` trong dự án. |
+| **Nén ngữ cảnh** | Biểu diễn lịch sử dài dưới dạng ngắn hơn để giảm lượng ngữ cảnh mà mô hình phải xử lý. |
 
-Files API manages file objects. Vector Stores API supports chunking, embeddings, retrieval, and metadata filtering. Containers API provides an isolated execution environment. (pp. 185–186)
+Files API quản lý các đối tượng file. Vector Stores API hỗ trợ chia đoạn, tạo embedding, truy xuất và lọc theo siêu dữ liệu. Containers API cung cấp môi trường thực thi cô lập. (tr. 185–186)
 
-## 5. Getting Started with OCI Enterprise AI Agents
+<a name="5-getting-started-with-oci-enterprise-ai-agents"></a>
 
-OCI authentication can use a **Generative AI API Key** or **OCI IAM request signing**. In the OpenAI-compatible interface, `base_url` identifies the regional endpoint, the model identifier selects a model, and the `OpenAI-Project` header identifies the Generative AI project by its OCI resource identifier (OCID). `client.responses.create()` uses that configuration when sending a model request. (pp. 187–191)
+## 5. Bắt đầu với OCI Enterprise AI Agents
 
-## 6. OCI Enterprise AI Agents – Deploy and Scale
+Có thể xác thực với OCI bằng **Generative AI API Key** hoặc **ký yêu cầu bằng OCI IAM**. Trong giao diện tương thích OpenAI, `base_url` xác định endpoint theo vùng. Định danh mô hình dùng để chọn mô hình. Header `OpenAI-Project` xác định dự án Generative AI bằng định danh tài nguyên OCI (OCID) của dự án. `client.responses.create()` dùng cấu hình này để gửi yêu cầu tới mô hình. (tr. 187–191)
 
-A hosted deployment packages agent logic and dependencies in a container image. OCI Container Registry stores the image. The deployment configuration governs identity, networking, storage, and scaling. The managed endpoint directs requests to the deployed application version. (pp. 192–195)
+<a name="6-oci-enterprise-ai-agents--deploy-and-scale"></a>
+
+## 6. Triển khai và mở rộng OCI Enterprise AI Agents
+
+Khi triển khai trên OCI, logic của agent và các gói phụ thuộc được đóng gói thành container image. OCI Container Registry lưu image này. Cấu hình triển khai quy định định danh, mạng, lưu trữ và cách mở rộng. Endpoint được quản lý chuyển yêu cầu đến phiên bản ứng dụng đã triển khai. (tr. 192–195)

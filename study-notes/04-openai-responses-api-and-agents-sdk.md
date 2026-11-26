@@ -1,39 +1,47 @@
 # OpenAI Responses API and Agents SDK
 
-Module 4 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), pp. 123–162 · [Index](README.md)
+*OpenAI Responses API và Agents SDK*
+
+Module 4 · [Student Guide D1114464GC10](https://mylearn.oracle.com/ekit/163240/163512/66a3c548-2f85-4e05-b3b6-c6327492f4d3/course), tr. 123–162 · [Mục lục](README.md)
 
 ## Agenda
 
-1. [OpenAI Agent Stack](#1-openai-agent-stack)
+*Nội dung học*
+
+1. [Kiến trúc agent của OpenAI](#1-openai-agent-stack)
 2. [OpenAI Responses API](#2-openai-responses-api)
 3. [OpenAI Agents SDK](#3-openai-agents-sdk)
-4. [Tools and Function Calling](#4-tools-and-function-calling)
-5. [Multi-Agent Systems with Handoffs](#5-multi-agent-systems-with-handoffs)
-6. [Guardrails and Safety](#6-guardrails-and-safety)
-7. [Putting it all together](#7-putting-it-all-together)
+4. [Tool và gọi hàm](#4-tools-and-function-calling)
+5. [Hệ thống nhiều agent dùng handoff](#5-multi-agent-systems-with-handoffs)
+6. [Guardrail và an toàn](#6-guardrails-and-safety)
+7. [Kết hợp các thành phần](#7-putting-it-all-together)
 
-Student Guide agenda, p. 124. See [Module Review](#module-review) for variations of the five skill-check questions.
+Nội dung theo chương trình học ở tr. 124 của Student Guide. Xem [Ôn tập module](#module-review) để luyện các biến thể của năm câu hỏi kiểm tra kỹ năng.
 
-## 1. OpenAI Agent Stack
+<a name="1-openai-agent-stack"></a>
 
-The **OpenAI agent stack** separates the application, the runtime, and the model API. The application owns business rules and permissions. The **Responses API** sends input to a model and returns structured output. The **Agents SDK** coordinates multi-step agent runs on top of the API. (pp. 125–129)
+## 1. Kiến trúc agent của OpenAI
 
-| Interface | Who controls the next step? | Typical use |
+**Kiến trúc agent của OpenAI** tách ứng dụng, runtime và API mô hình thành các lớp riêng. Ứng dụng quản lý quy tắc nghiệp vụ và quyền truy cập. **Responses API** gửi đầu vào cho mô hình và trả về đầu ra có cấu trúc. **Agents SDK** dùng API này để điều phối các lượt chạy agent có nhiều bước. (tr. 125–129)
+
+| Giao diện | Ai quyết định bước tiếp theo? | Trường hợp sử dụng điển hình |
 | --- | --- | --- |
-| **Responses API directly** | Application code interprets responses and decides which calls to make next. | A single answer, a workflow with predefined steps, or a custom loop the application already manages. |
-| **Agents SDK** | The configured runner manages the agent loop, including application function tools and handoffs. | **Workflows that need agent orchestration, guardrails, or collaboration between agents.** |
+| **Gọi trực tiếp Responses API** | Mã ứng dụng đọc phản hồi và quyết định các lời gọi tiếp theo. | Trả lời một lần, chạy workflow có các bước định trước hoặc dùng vòng lặp tùy chỉnh mà ứng dụng đã quản lý. |
+| **Agents SDK** | Runner đã cấu hình quản lý vòng lặp của agent, gồm các tool dựa trên hàm của ứng dụng và các handoff. | **Workflow cần điều phối agent, guardrail hoặc phối hợp giữa nhiều agent.** |
 
-The Responses API also supports tool calling and multi-turn context. With direct API calls, the application handles any custom tool execution and follow-up requests itself. The choice depends on how much orchestration the application wants the SDK to manage.
+Responses API cũng hỗ trợ gọi tool và sử dụng ngữ cảnh qua nhiều lượt. Khi gọi API trực tiếp, ứng dụng tự thực thi các tool tùy chỉnh và gửi yêu cầu tiếp theo. Lựa chọn phụ thuộc vào phần điều phối mà ứng dụng muốn giao cho SDK.
 
-![The OpenAI agent stack includes the Responses API, Agents SDK, guardrails, and tracing.](images/04-openai-agent-stack.png)
+![Kiến trúc agent của OpenAI gồm Responses API, Agents SDK, guardrail và tracing.](images/04-openai-agent-stack.png)
 
 ## 2. OpenAI Responses API
 
-`client.responses.create()` takes a model and text or structured input. The response contains **output items** for structured processing, including messages or function calls. `response.output_text` is a convenience property for reading the response text. (pp. 130–132)
+`client.responses.create()` nhận mô hình cùng đầu vào dạng văn bản hoặc có cấu trúc. Phản hồi chứa các **mục đầu ra** để xử lý theo cấu trúc, chẳng hạn tin nhắn hoặc lời gọi hàm. Thuộc tính `response.output_text` giúp đọc nhanh phần văn bản của phản hồi. (tr. 130–132)
 
-### Continuing a conversation
+<a name="continuing-a-conversation"></a>
 
-**`previous_response_id` links a new request to an earlier response so the model can continue with the prior conversation context.** The follow-up sends its new input and references the preceding response's `id`. This avoids manually resending the full earlier history with each request. (pp. 133–135)
+### Tiếp tục cuộc hội thoại
+
+**`previous_response_id` liên kết yêu cầu mới với một phản hồi trước đó để mô hình tiếp tục sử dụng ngữ cảnh hội thoại đã có.** Yêu cầu tiếp theo gửi đầu vào mới và tham chiếu `id` của phản hồi liền trước. Nhờ vậy, ứng dụng không phải gửi lại toàn bộ lịch sử theo cách thủ công ở mỗi yêu cầu. (tr. 133–135)
 
 ```python
 first = client.responses.create(
@@ -48,106 +56,130 @@ second = client.responses.create(
 )
 ```
 
-Each request can supply its own top-level `instructions`. If the same instructions should apply again, pass them on the follow-up request. Prior input tokens in the chain still count toward input billing. An application can also manage history itself by passing the relevant earlier items in `input`. [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+Mỗi yêu cầu có thể cung cấp `instructions` cấp cao nhất của riêng nó. Nếu vẫn cần áp dụng cùng chỉ dẫn, hãy truyền lại trong yêu cầu tiếp theo. Các token đầu vào trước đó trong chuỗi vẫn được tính phí đầu vào. Ứng dụng cũng có thể tự quản lý lịch sử bằng cách truyền các mục trước đó có liên quan vào `input`. [Trạng thái hội thoại](https://developers.openai.com/api/docs/guides/conversation-state)
 
 ### Tools in a response
 
-Available built-in tools can include Web Search, File Search, Code Interpreter, Computer Use, and Image Generation. The application declares which tools are available for the request. The model may request a tool or answer directly. For an application-defined function, the application executes the function and returns its result in a follow-up request. (pp. 133–135)
+*Tool trong phản hồi*
+
+Các tool tích hợp sẵn có thể gồm Web Search, File Search, Code Interpreter, Computer Use và Image Generation. Ứng dụng khai báo những tool khả dụng cho yêu cầu. Mô hình có thể yêu cầu gọi tool hoặc trả lời trực tiếp. Với hàm do ứng dụng định nghĩa, ứng dụng thực thi hàm rồi gửi kết quả trong yêu cầu tiếp theo. (tr. 133–135)
 
 ## 3. OpenAI Agents SDK
 
-`Agent` holds instructions, a model, and tools. The **Runner** sends input to the model, executes requested function tools, and passes their results back. It repeats the loop until the run finishes or reaches a stopping condition. (pp. 136–141)
+`Agent` chứa chỉ dẫn, mô hình và các tool. **Runner** gửi đầu vào tới mô hình, thực thi các tool dựa trên hàm được yêu cầu rồi gửi kết quả trở lại mô hình. Runner lặp lại quy trình cho đến khi lượt chạy hoàn tất hoặc gặp điều kiện dừng. (tr. 136–141)
 
-`Runner.run_sync()` runs synchronously. `Runner.run()` is asynchronous. The completed run exposes its final result as `result.final_output`. (pp. 138–141)
+`Runner.run_sync()` chạy đồng bộ. `Runner.run()` chạy bất đồng bộ. Khi lượt chạy hoàn tất, kết quả cuối cùng nằm trong `result.final_output`. (tr. 138–141)
 
-## 4. Tools and Function Calling
+<a name="4-tools-and-function-calling"></a>
 
-| Tool type | Who does the work? |
+## 4. Tool và gọi hàm
+
+| Loại tool | Thành phần nào thực hiện công việc? |
 | --- | --- |
-| **Hosted Tools** | The platform provides and executes a capability such as Web Search or Code Interpreter. |
-| **Function Tools** | The application's Python function performs the operation. `@function_tool` exposes its definition to the agent. |
-| **Agents as Tools** | `Agent.as_tool()` exposes a specialist agent. Its result returns to the agent that called it. |
+| **Tool do nền tảng cung cấp (Hosted Tools)** | Nền tảng cung cấp và thực thi tính năng như Web Search hoặc Code Interpreter. |
+| **Tool dựa trên hàm (Function Tools)** | Hàm Python của ứng dụng thực hiện thao tác. `@function_tool` cung cấp định nghĩa của hàm cho agent. |
+| **Agent dưới dạng tool (Agents as Tools)** | `Agent.as_tool()` cung cấp một agent chuyên trách dưới dạng tool. Kết quả được trả về cho agent đã gọi nó. |
 
-### Function tool schemas
+<a name="function-tool-schemas"></a>
 
-**`@function_tool` uses Python parameter type hints to generate the tool's input schema automatically.** For example, `get_order(order_id: str, include_items: bool)` yields an input shape with a string and a boolean. The docstring can describe the tool and its arguments so the model knows when and how to call it. Type hints describe inputs for both synchronous and asynchronous functions. [Agents SDK tools](https://openai.github.io/openai-agents-python/tools/)
+### Schema của tool dựa trên hàm
 
-The schema describes valid arguments. The function body performs the actual work and enforces business rules. For example, an order ID can have the right type while referring to an order the caller has no permission to view.
+**`@function_tool` dùng khai báo kiểu của các tham số Python để tự động tạo schema đầu vào cho tool.** Ví dụ, `get_order(order_id: str, include_items: bool)` tạo đầu vào gồm một chuỗi và một giá trị boolean. Docstring có thể mô tả tool và các đối số để mô hình biết khi nào nên gọi và gọi như thế nào. Khai báo kiểu mô tả đầu vào cho cả hàm đồng bộ và hàm bất đồng bộ. [Tool trong Agents SDK](https://openai.github.io/openai-agents-python/tools/)
 
-The runner passes intermediate tool results back to the model, so later calls can depend on them. (pp. 142–148) [Tool execution in LangChain](02-langchain-for-ai-agents.md#3-langchain-agent-under-the-hood)
+Schema mô tả các đối số hợp lệ. Thân hàm thực hiện thao tác và áp dụng các quy tắc nghiệp vụ. Ví dụ, mã đơn hàng có thể đúng kiểu dữ liệu nhưng trỏ tới đơn mà người gọi không có quyền xem.
 
-## 5. Multi-Agent Systems with Handoffs
+Runner chuyển kết quả trung gian từ tool về cho mô hình, để những lần gọi sau có thể sử dụng các kết quả đó. (tr. 142–148) [Thực thi tool trong LangChain](02-langchain-for-ai-agents.md#3-langchain-agent-under-the-hood)
 
-**Triage** routes a request to a suitable specialist. The orchestration pattern determines who controls the current run after routing. (pp. 149–152)
+<a name="5-multi-agent-systems-with-handoffs"></a>
 
-| Pattern | Who controls the turn? | How it is configured |
+## 5. Hệ thống nhiều agent dùng handoff
+
+**Phân luồng (triage)** chuyển yêu cầu đến agent chuyên trách phù hợp. Mẫu điều phối quyết định agent nào điều khiển lượt chạy hiện tại sau khi phân luồng. (tr. 149–152)
+
+| Mẫu | Agent nào điều khiển lượt xử lý? | Cách cấu hình |
 | --- | --- | --- |
-| **Manager pattern** | **The manager keeps control, delegates bounded tasks to specialists, and can combine their results into the final answer.** | Expose specialists to the manager through `Agent.as_tool()`. |
-| **Handoff** | The specialist becomes the active agent and can respond directly to the user. | List targets in `handoffs`. Use `handoff_description` to describe when to route to a specialist. |
+| **Mẫu agent quản lý (Manager pattern)** | **Agent quản lý giữ quyền điều khiển, giao các tác vụ có phạm vi rõ ràng cho agent chuyên trách và có thể tổng hợp kết quả thành câu trả lời cuối cùng.** | Cung cấp các agent chuyên trách cho agent quản lý qua `Agent.as_tool()`. |
+| **Handoff** | Agent chuyên trách tiếp quản và có thể trả lời trực tiếp cho người dùng. | Liệt kê các agent đích trong `handoffs`. Dùng `handoff_description` để mô tả khi nào nên chuyển yêu cầu đến từng agent chuyên trách. |
 
-For example, a support manager can ask an Orders specialist for delivery status and a Returns specialist for the return policy, then combine their results. If the Returns specialist should handle the rest of the user's turn directly, the triage agent can hand off to it. Specialists can have their own tools in either pattern. [Agent orchestration](https://openai.github.io/openai-agents-python/multi_agent/)
+Ví dụ, agent quản lý hỗ trợ khách hàng có thể hỏi agent Đơn hàng về trạng thái giao hàng, hỏi agent Trả hàng về chính sách trả hàng rồi tổng hợp kết quả. Nếu agent Trả hàng cần trực tiếp xử lý phần còn lại của lượt người dùng, agent phân luồng có thể handoff cho agent đó. Trong cả hai mẫu, các agent chuyên trách đều có thể có tool riêng. [Điều phối agent](https://openai.github.io/openai-agents-python/multi_agent/)
 
-## 6. Guardrails and Safety
+<a name="6-guardrails-and-safety"></a>
 
-**Input guardrails** validate a request. A blocking check finishes before the agent starts. A concurrent check can overlap with agent work, so the run can begin before the guardrail result is known. **Output guardrails** check the final result. (pp. 153–154)
+## 6. Guardrail và an toàn
 
-An `@input_guardrail` can return `GuardrailFunctionOutput` with `tripwire_triggered` set to stop the run. Pydantic can represent the structured result of a checker agent. (pp. 155–156)
+**Guardrail đầu vào** kiểm tra yêu cầu. Kiểm tra ở chế độ chặn phải hoàn tất rồi agent mới bắt đầu. Kiểm tra đồng thời có thể diễn ra song song với công việc của agent, nên lượt chạy có thể bắt đầu trước khi có kết quả kiểm tra. **Guardrail đầu ra** kiểm tra kết quả cuối cùng. (tr. 153–154)
+
+`@input_guardrail` có thể trả về `GuardrailFunctionOutput` với `tripwire_triggered` được đặt để dừng lượt chạy. Pydantic có thể biểu diễn kết quả có cấu trúc của agent kiểm tra. (tr. 155–156)
 
 ### Tracing
 
-**Tracing records what happened during an agent run so developers can monitor execution and debug failures.** A **trace** groups related operations. A **span** represents an individual operation, such as a model generation, a function tool call, a handoff, or a guardrail check. (pp. 155–156)
+**Tracing ghi lại diễn biến của lượt chạy agent để lập trình viên theo dõi quá trình thực thi và gỡ lỗi.** Một **trace** nhóm các thao tác liên quan. Một **span** biểu diễn một thao tác riêng lẻ, chẳng hạn lần sinh nội dung của mô hình, lời gọi tool dựa trên hàm, một handoff hoặc một lần kiểm tra guardrail. (tr. 155–156)
 
-For example, if a returns request is slow, inspect the spans to see whether the delay came from a model call, a guardrail, or the order lookup. The guardrail can stop the run. Its span records what happened. [Agents SDK tracing](https://openai.github.io/openai-agents-python/tracing/)
+Ví dụ, nếu yêu cầu trả hàng xử lý chậm, hãy xem các span để xác định độ trễ đến từ lần gọi mô hình, guardrail hay bước tra cứu đơn hàng. Guardrail có thể dừng lượt chạy. Span tương ứng ghi lại diễn biến. [Tracing trong Agents SDK](https://openai.github.io/openai-agents-python/tracing/)
 
-## 7. Putting it all together
+<a name="7-putting-it-all-together"></a>
 
-A customer support system combines an input guardrail, a triage agent, and specialists for order status, refunds, or frequently asked questions. The guardrail checks scope. Triage selects the specialist. The specialist calls the appropriate function or search tool and uses the result in its answer. (pp. 157–162)
+## 7. Kết hợp các thành phần
 
-A trace connects the routing decision to the selected tool and the final answer. It also shows whether latency came from a model call, a guardrail, or the function itself. (pp. 159–161)
+Một hệ thống hỗ trợ khách hàng kết hợp guardrail đầu vào, agent phân luồng và các agent chuyên trách về trạng thái đơn hàng, hoàn tiền hoặc câu hỏi thường gặp. Guardrail kiểm tra yêu cầu có nằm trong phạm vi xử lý hay không. Agent phân luồng chọn agent chuyên trách. Agent chuyên trách gọi hàm hoặc tool tìm kiếm phù hợp rồi dùng kết quả để trả lời. (tr. 157–162)
 
-## Module Review
+Trace liên kết quyết định phân luồng với tool được chọn và câu trả lời cuối cùng. Trace cũng cho thấy độ trễ đến từ lần gọi mô hình, guardrail hay chính hàm được gọi. (tr. 159–161)
+
+<a name="module-review"></a>
+
+## Ôn tập module
 
 ### Q1. Manager pattern and handoffs
 
-See [Multi-Agent Systems with Handoffs](#5-multi-agent-systems-with-handoffs).
+*Câu 1. Mẫu agent quản lý và handoff*
 
-- **What does the central manager do?** It delegates tasks to specialized agents, receives their results, and retains control of the turn.
-- **When would you use a handoff?** When the specialist should become the active agent and handle the rest of the current turn directly.
-- **What does `Agent.as_tool()` return control to?** The specialist's result goes back to the calling agent, which can decide what to do next.
-- **Does the manager pattern determine how specialists schedule or use their tools?** The pattern determines who controls the turn. Tools, permissions, and execution scheduling depend on the agent and application configuration.
+Xem [Hệ thống nhiều agent dùng handoff](#5-multi-agent-systems-with-handoffs).
+
+- **Agent quản lý trung tâm làm gì?** Nó giao việc cho các agent chuyên trách, nhận kết quả và giữ quyền điều khiển lượt xử lý.
+- **Khi nào nên dùng handoff?** Khi agent chuyên trách cần tiếp quản và trực tiếp xử lý phần còn lại của lượt hiện tại.
+- **Khi dùng `Agent.as_tool()`, quyền điều khiển quay về đâu?** Kết quả của agent chuyên trách được trả về cho agent đã gọi nó. Agent gọi có thể quyết định bước tiếp theo.
+- **Mẫu agent quản lý có quyết định cách các agent chuyên trách lên lịch hoặc sử dụng tool không?** Mẫu này xác định ai điều khiển lượt xử lý. Tool, quyền và lịch thực thi phụ thuộc vào cấu hình của agent và ứng dụng.
 
 ### Q2. Type hints and function tool definitions
 
-See [Function tool schemas](#function-tool-schemas).
+*Câu 2. Khai báo kiểu và định nghĩa tool dựa trên hàm*
 
-- **Why do type hints matter in `@function_tool`?** The SDK reads them to derive the expected types and generate the tool's input schema.
-- **What does the docstring contribute?** It explains what the tool does and can describe individual arguments to help the model choose and call it.
-- **Can an asynchronous function be used as a tool?** Yes. Type hints define the arguments. The function definition determines whether its implementation is synchronous or asynchronous.
-- **Who checks whether the caller may access an order?** The tool or application service enforces that permission. The schema can describe an order ID as a string.
+Xem [Schema của tool dựa trên hàm](#function-tool-schemas).
+
+- **Vì sao khai báo kiểu quan trọng với `@function_tool`?** SDK đọc khai báo kiểu để suy ra các kiểu dữ liệu dự kiến và tạo schema đầu vào của tool.
+- **Docstring có vai trò gì?** Nó giải thích tool làm gì và có thể mô tả từng đối số để giúp mô hình chọn và gọi tool.
+- **Có thể dùng một hàm bất đồng bộ làm tool không?** Có. Khai báo kiểu định nghĩa các đối số. Định nghĩa hàm quyết định phần triển khai chạy đồng bộ hay bất đồng bộ.
+- **Ai kiểm tra người gọi có quyền truy cập đơn hàng hay không?** Tool hoặc dịch vụ của ứng dụng thực thi quy tắc phân quyền đó. Schema có thể mô tả mã đơn hàng là một chuỗi.
 
 ### Q3. Tracing and debugging
 
-See [Tracing](#tracing).
+*Câu 3. Tracing và gỡ lỗi*
 
-- **Why enable tracing?** It shows the steps an agent took and helps locate failures, unexpected routing, or slow operations.
-- **What is the difference between a trace and a span?** A trace groups related operations. A span records an individual operation, such as a tool call or handoff.
-- **Where would you look if an agent selected the right specialist but answered with stale data?** Follow the handoff to the specialist, then inspect the data lookup and the result returned to the agent, when those details were captured.
-- **Which component stops a disallowed request, and which records it?** A guardrail can stop the run when its tripwire triggers. Tracing records the guardrail event for inspection.
+Xem [Tracing](#tracing).
+
+- **Vì sao nên bật tracing?** Tracing cho thấy các bước agent đã thực hiện và giúp tìm ra lỗi, quyết định phân luồng bất ngờ hoặc thao tác chạy chậm.
+- **Trace và span khác nhau thế nào?** Trace nhóm các thao tác liên quan. Span ghi lại một thao tác riêng lẻ, chẳng hạn lời gọi tool hoặc một handoff.
+- **Nên kiểm tra ở đâu nếu agent chọn đúng agent chuyên trách nhưng dùng dữ liệu cũ để trả lời?** Theo dõi handoff đến agent chuyên trách rồi kiểm tra bước tra cứu và kết quả trả về cho agent, nếu trace có ghi lại các chi tiết đó.
+- **Thành phần nào dừng yêu cầu không được phép và thành phần nào ghi lại sự kiện?** Guardrail có thể dừng lượt chạy khi điều kiện chặn được kích hoạt. Tracing ghi lại sự kiện guardrail để xem xét.
 
 ### Q4. Conversation chaining
 
-See [Continuing a conversation](#continuing-a-conversation).
+*Câu 4. Nối các lượt hội thoại*
 
-- **What does `previous_response_id` do?** It links the new request to the prior response, letting the model continue with the earlier context.
-- **Which ID goes into the next request?** The `id` of the response you want to continue from. It identifies a response in the chain.
-- **Do earlier top-level `instructions` carry over automatically?** Top-level `instructions` apply to the request that supplies them. Send them again when the follow-up should use the same instructions.
-- **Does sending only the new input make prior context free?** Earlier input tokens in the chain still count toward input billing. The response ID saves you from manually resending the full history.
+Xem [Tiếp tục cuộc hội thoại](#continuing-a-conversation).
+
+- **`previous_response_id` làm gì?** Nó liên kết yêu cầu mới với phản hồi trước để mô hình tiếp tục sử dụng ngữ cảnh đã có.
+- **Cần đưa ID nào vào yêu cầu tiếp theo?** Dùng `id` của phản hồi mà bạn muốn tiếp tục từ đó. ID này xác định một phản hồi trong chuỗi.
+- **`instructions` cấp cao nhất của yêu cầu trước có tự được áp dụng tiếp không?** `instructions` cấp cao nhất áp dụng cho yêu cầu cung cấp chúng. Hãy gửi lại nếu yêu cầu tiếp theo cần cùng chỉ dẫn.
+- **Chỉ gửi đầu vào mới thì có được dùng miễn phí ngữ cảnh trước đó không?** Các token đầu vào trước đó trong chuỗi vẫn được tính phí đầu vào. ID phản hồi giúp bạn khỏi phải gửi lại toàn bộ lịch sử theo cách thủ công.
 
 ### Q5. Responses API versus Agents SDK
 
-See [OpenAI Agent Stack](#1-openai-agent-stack).
+*Câu 5. Responses API và Agents SDK*
 
-- **When is the Agents SDK the better fit in the course framework?** When the application needs a runner to manage agent steps, guardrails, or coordination between agents.
-- **When is the Responses API directly sufficient?** When the application needs one response or already controls a workflow whose steps it can manage itself.
-- **Can a direct Responses API integration use custom tools?** Yes. The model can request the function. The application executes it and returns the result in a follow-up API call.
-- **Does a multi-turn chat by itself require the Agents SDK?** The Responses API can continue context through `previous_response_id`. The SDK becomes useful when the application also needs orchestration, such as a tool loop or handoffs.
+Xem [Kiến trúc agent của OpenAI](#1-openai-agent-stack).
+
+- **Theo cách phân loại trong khóa học, khi nào Agents SDK phù hợp hơn?** Khi ứng dụng cần runner để quản lý các bước của agent, guardrail hoặc việc phối hợp giữa các agent.
+- **Khi nào chỉ cần gọi trực tiếp Responses API?** Khi ứng dụng cần một phản hồi hoặc đã tự điều khiển được các bước trong workflow.
+- **Tích hợp trực tiếp Responses API có dùng được tool tùy chỉnh không?** Có. Mô hình có thể yêu cầu gọi hàm. Ứng dụng thực thi hàm rồi trả kết quả trong một lời gọi API tiếp theo.
+- **Chỉ riêng việc hội thoại nhiều lượt có đòi hỏi Agents SDK không?** Responses API có thể duy trì ngữ cảnh qua `previous_response_id`. SDK hữu ích khi ứng dụng còn cần điều phối, chẳng hạn quản lý vòng lặp gọi tool hoặc các handoff.
