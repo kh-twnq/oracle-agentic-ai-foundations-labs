@@ -52,7 +52,7 @@ Anthropic giới thiệu MCP vào tháng 11 năm 2024. Dự án thuộc Agentic 
 | --- | --- | --- |
 | **Tools** | `tools/list` và `tools/call`. Mô hình có thể đề xuất một lời gọi, còn host quản lý việc thực thi. | `get_order` tra cứu một đơn hàng. |
 | **Resources** | `resources/list` và `resources/read`. Ứng dụng chọn dữ liệu theo URI để đưa vào ngữ cảnh. | Văn bản chính sách trả hàng. |
-| **Prompts** | `prompts/list` và `prompts/get`. Người dùng có thể chọn một mẫu tương tác rồi điền tham số. | Mẫu soạn câu trả lời cho yêu cầu trả hàng. |
+| **Prompts** | `prompts/list` và `prompts/get`. **Người dùng có thể chọn một mẫu tương tác dùng lại** từ giao diện rồi điền tham số. | Mẫu soạn câu trả lời cho yêu cầu trả hàng. |
 
 Server khai báo các khả năng nó hỗ trợ. Host chọn cách đưa chúng vào ứng dụng. (tr. 96–98) [Kiến trúc MCP](https://modelcontextprotocol.io/docs/learn/architecture)
 
@@ -135,13 +135,13 @@ Chuyển một tool cục bộ sang MCP làm thay đổi nơi chạy hàm xử l
 
 `FastMCP` có thể cung cấp các hàm đã đăng ký bằng `@mcp.tool()`. **`MultiServerMCPClient` quản lý các kết nối độc lập tới những server đã cấu hình. Phương thức `get_tools()` gộp các tool tìm được thành một danh sách để agent LangChain sử dụng.**
 
-Ví dụ, agent có thể thấy `get_order` từ server Orders và `check_stock` từ server Inventory. Lời gọi `get_order` được gửi đến server Orders. Các server hoạt động độc lập và cung cấp các tool riêng.
+**Khi các MCP server công bố tool trùng tên, host hoặc client phân biệt bằng server nguồn.** Ví dụ, nếu Orders và Inventory đều có `lookup`, host có thể hiển thị `orders_lookup` và `inventory_lookup`, rồi chuyển lời gọi cho đúng kết nối với tên gốc `lookup`. [Định tuyến nhiều MCP server trong LangChain](https://docs.langchain.com/oss/python/langchain/mcp/connections)
 
 Gọi trực tiếp phù hợp với logic cục bộ đơn giản. Giao diện MCP hữu ích khi nhiều ứng dụng dùng chung tool hoặc khi phần triển khai do một dịch vụ khác quản lý. (tr. 107–115, 121)
 
 ### Tích hợp server toán học vào LangChain
 
-Trong lab, `mcp_math_server.py` công bố bốn tool toán học. `first_agent_with_mcp.py` cấu hình server `math` qua `stdio`, gọi `await client.get_tools()`, truyền danh sách vào `create_agent(model, tools)` rồi gọi `await agent.ainvoke(...)`. Khi mô hình chọn một tool, adapter chuyển yêu cầu sang `tools/call` và đưa kết quả trở lại vòng lặp agent. [Mã lab MCP](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/MCP)
+Trong lab, `mcp_math_server.py` công bố bốn tool toán học. **`mcp.run(transport="stdio")` khởi chạy server và trao đổi thông điệp qua `stdin` và `stdout`.** `first_agent_with_mcp.py` cấu hình server `math` qua `stdio`, gọi `await client.get_tools()`, truyền danh sách vào `create_agent(model, tools)` rồi gọi `await agent.ainvoke(...)`. Khi mô hình chọn một tool, adapter chuyển yêu cầu sang `tools/call` và đưa kết quả trở lại vòng lặp agent. [Mã lab MCP](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/MCP)
 
 Chạy [fixture cục bộ](../labs/README.md#reproduce-the-local-runs) để so sánh hai bước. Kết quả khám phá phải có `add`, `multiply`, `divide` và `square_root`. Yêu cầu tính 15 nhân 8 rồi chia 3 phải dùng kết quả 120 làm đầu vào cho phép chia và cho ra 40. [Kết quả khám phá và gọi tool](../labs/sample-results/mcp-math.json)
 

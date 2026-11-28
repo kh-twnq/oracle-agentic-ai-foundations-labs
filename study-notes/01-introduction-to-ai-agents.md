@@ -20,11 +20,11 @@ Nội dung theo chương trình học ở tr. 10 của Student Guide. Xem [Ôn t
 
 ## 1. AI agent là gì?
 
-**AI agent chọn hành động tiếp theo dựa trên mục tiêu và thông tin có được tại thời điểm đó.** Một agent dựa trên LLM kết hợp mô hình, các tool và vòng lặp thực thi. Kết quả từ tool có thể làm đổi hướng xử lý của agent. (tr. 11–16)
+**AI agent chọn hành động tiếp theo dựa trên mục tiêu và thông tin có được tại thời điểm đó.** **Agent dựa trên LLM kết hợp mô hình, tool và cơ chế điều phối vòng lặp.** Kết quả từ tool có thể làm đổi hướng xử lý của agent. (tr. 11–16)
 
 | Hệ thống | Mức tự chủ và cách xử lý | Vai trò của tool |
 | --- | --- | --- |
-| Chatbot truyền thống | Phản hồi từng lượt theo kịch bản, FAQ hoặc ngữ cảnh chat. | Có thể tra một nguồn cấu hình sẵn để trả lời. |
+| Chatbot truyền thống | **Phản hồi từng lượt** theo kịch bản, FAQ hoặc ngữ cảnh chat. | Có thể tra một nguồn cấu hình sẵn để trả lời. |
 | Workflow theo quy tắc | **Quy tắc của ứng dụng xác định trước các bước và điều kiện rẽ nhánh.** | Ứng dụng gọi dịch vụ tại các bước đã định. |
 | AI agent | **Mô hình chọn bước tiếp theo dựa trên mục tiêu, ngữ cảnh và kết quả vừa quan sát.** Runtime giữ quyền thực thi trong các giới hạn của ứng dụng. | Mô hình có thể chọn tool và đối số ở mỗi vòng lặp, rồi điều chỉnh bước sau theo kết quả. |
 
@@ -49,7 +49,7 @@ Với cùng câu hỏi về trả hàng, chatbot có thể trả lời từ FAQ,
 - **Act.** Kiểm tra tính hợp lệ của lời gọi tool được đề xuất và thực thi nếu được phép.
 - **Observe.** **Tiếp nhận kết quả của hành động trước và đưa kết quả đó vào lần ra quyết định tiếp theo.** Kết quả quan sát được có thể là dữ liệu trả về, kết quả rỗng hoặc lỗi của tool.
 
-Ví dụ, sau khi agent gọi `get_order`, nó nhận và xem trạng thái trả về. Nếu đơn đã giao, chatbot có thể tra cứu chính sách trả hàng. Nếu kết quả rỗng, chatbot có thể hỏi lại mã đơn hàng.
+**Định tuyến tool (tool routing)** gồm chọn tool, chuẩn bị lời gọi, chuyển cho đúng hàm xử lý và đưa kết quả về vòng lặp. Ví dụ, sau khi gọi `get_order`, agent có thể tra chính sách trả hàng nếu đơn đã giao hoặc hỏi lại mã đơn khi kết quả rỗng.
 
 Runtime có thể dừng khi có câu trả lời cuối cùng, chạm giới hạn số vòng lặp, gặp lỗi hoặc handoff cho người xử lý. (tr. 15–21)
 
@@ -88,6 +88,8 @@ LangChain và LangGraph hỗ trợ điều phối có trạng thái. OpenAI Agen
 ## 5. An toàn và guardrail
 
 Tool có thể đọc dữ liệu hoặc tạo ra tác động bên ngoài. **Prompt injection** đưa chỉ dẫn vào thông qua dữ liệu. **Lạm dụng tool** là dùng tool ngoài mục đích đã định. **Đầu độc bộ nhớ** là lưu lại đầu vào có hại hoặc gây hiểu lầm. **Rò rỉ dữ liệu** làm lộ thông tin được bảo vệ. **Thực thi mất kiểm soát** tiêu tốn quá nhiều thời gian hoặc ngân sách. (tr. 46–50)
+
+**Phòng thủ chiều sâu giảm rủi ro bằng nhiều lớp kiểm soát.** Ví dụ, kiểm tra quyền tại tool vẫn có thể chặn truy cập trái phép khi yêu cầu đã qua bước kiểm tra đầu vào.
 
 | Lớp phòng thủ chiều sâu | Biện pháp kiểm soát |
 | --- | --- |

@@ -21,11 +21,11 @@ Nội dung theo chương trình học ở tr. 164 của Student Guide. Xem [Ôn 
 
 ## 1. Vì sao cần quản lý vòng đời và runtime của agent?
 
-**Logic của agent** quyết định agent nên làm gì. **Runtime của agent** cung cấp môi trường để chạy logic đó. **Ứng dụng** gửi đầu vào và sử dụng kết quả. Vòng đời gồm phát triển, kiểm thử, triển khai, vận hành và chỉnh sửa. (tr. 165–168)
+**Framework như LangChain hoặc OpenAI Agents SDK giúp xây dựng logic và vòng lặp của agent. Runtime vận hành logic đó**, gồm mở rộng, quản lý trạng thái, tích hợp và quan sát hệ thống. **Ứng dụng** gửi đầu vào và sử dụng kết quả. Vòng đời gồm phát triển, kiểm thử, triển khai, vận hành và chỉnh sửa. (tr. 165–168)
 
 | Khả năng của runtime | Trách nhiệm |
 | --- | --- |
-| Xử lý yêu cầu | Tiếp nhận, xác thực, giới hạn tần suất và định tuyến yêu cầu. |
+| **Xử lý yêu cầu** | **Xác thực, kiểm tra và định tuyến để gọi đúng agent**. Runtime cũng có thể giới hạn tần suất. |
 | Môi trường thực thi | Chạy agent trên máy chủ, trong container hoặc trong môi trường serverless. |
 | Điều phối và trạng thái | Điều phối các bước, phiên, bộ nhớ và các lần thử lại. |
 | Sandbox cho tool | **Cô lập quá trình chạy tool khỏi môi trường host** và giới hạn tài nguyên tool có thể sử dụng. |
@@ -41,7 +41,7 @@ Nhóm có thể tự vận hành các thành phần này hoặc dùng runtime đ
 
 ## 2. Giới thiệu về nền tảng OCI Enterprise AI
 
-OCI Enterprise AI kết hợp **mô hình (Models)** để xử lý thông tin, **agent (Agents)** để điều phối và thực thi, cùng **quản trị (Governance)** để kiểm soát quyền truy cập và hành vi. (tr. 172–177)
+OCI Enterprise AI kết hợp **Models để cung cấp suy luận được quản lý cho các mô hình được hỗ trợ**, **Agents** để điều phối và thực thi, cùng **Governance** để kiểm soát quyền truy cập và hành vi. (tr. 172–177)
 
 ![OCI Enterprise AI kết hợp mô hình, agent và quản trị.](images/05-oci-enterprise-ai.png)
 
@@ -81,7 +81,7 @@ OCI Enterprise AI Agents cung cấp hai cách chạy tải công việc của ag
 | Lựa chọn | Logic ứng dụng chạy ở đâu? | OCI cung cấp gì? |
 | --- | --- | --- |
 | **OCI Responses API** | Trong môi trường riêng của nhóm phụ trách ứng dụng. | API được quản lý cho mô hình, các tool được hỗ trợ và trạng thái hội thoại. |
-| **Hosted Agentic Apps** | Trong container chạy trên hạ tầng do OCI quản lý. | Một endpoint cho ứng dụng và hạ tầng được quản lý theo cấu hình triển khai. |
+| **Hosted Agentic Apps** | Trong container chạy trên hạ tầng do OCI quản lý. | **Endpoint, mở rộng runtime, mạng, lưu trữ và xác thực** theo cấu hình ứng dụng. |
 
 Hai cách có thể kết hợp. Một Hosted Agentic App có thể gọi OCI Responses API để tương tác với mô hình, dùng Conversations API để giữ ngữ cảnh và dùng sandbox để xử lý file. [Kiến trúc kết hợp trên OCI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/agents.htm)
 
@@ -94,7 +94,7 @@ OCI Responses API cung cấp giao diện tương thích OpenAI để định tuy
 | Tool | Vai trò khi thực thi |
 | --- | --- |
 | **File Search** | OCI truy xuất nội dung từ vector store được chỉ định. |
-| **Code Interpreter** | OCI chạy Python trong môi trường cô lập. |
+| **Code Interpreter** | **Chạy Python trong môi trường cô lập**, chẳng hạn để phân tích dữ liệu hoặc xử lý file. |
 | **Function Calling** | Mô hình yêu cầu gọi hàm. Ứng dụng kiểm tra đối số, thực thi hàm và gửi kết quả về OCI. |
 | **MCP Calling** | OCI kết nối MCP server từ xa và gọi các tool được phép. |
 
@@ -104,7 +104,7 @@ Chọn mô hình và vùng có hỗ trợ tool cần dùng. [Tool trong OCI Resp
 
 | Tính năng trạng thái hoặc bộ nhớ | Phạm vi |
 | --- | --- |
-| **Bộ nhớ ngắn hạn** | Ngữ cảnh qua nhiều lượt trong cùng một cuộc hội thoại. |
+| **Bộ nhớ ngắn hạn** | **Giữ ngữ cảnh qua nhiều lượt trong cùng một phiên hội thoại.** |
 | **Bộ nhớ dài hạn** | Ngữ cảnh qua nhiều phiên, gắn với một `subject_id` trong dự án. |
 | **Nén ngữ cảnh** | Biểu diễn lịch sử dài dưới dạng ngắn hơn để giảm lượng ngữ cảnh mà mô hình phải xử lý. |
 
@@ -115,8 +115,10 @@ Chọn mô hình và vùng có hỗ trợ tool cần dùng. [Tool trong OCI Resp
 | API | Trách nhiệm |
 | --- | --- |
 | **Files API** | Quản lý các đối tượng file. |
-| **Vector Stores API** | Hỗ trợ chia đoạn, tạo embedding, truy xuất và lọc theo siêu dữ liệu. |
+| **Vector Stores API** | **Quản lý kho phục vụ truy xuất tài liệu theo ngữ nghĩa**, gồm chia đoạn, tạo embedding và lập chỉ mục. |
 | **Containers API** | **Cung cấp môi trường thực thi cô lập để chạy tác vụ tùy chỉnh**, chẳng hạn xử lý file hoặc chạy mã phân tích dữ liệu. |
+
+Với File Search, ứng dụng chỉ định vector store để tool tìm những đoạn liên quan đến câu hỏi, kể cả khi tài liệu dùng cách diễn đạt khác. [Vector Stores trong OCI Generative AI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/vector-stores.htm)
 
 Sandbox là môi trường chạy tác vụ. Containers API cung cấp cách làm việc với môi trường đó. Hosted Agentic Apps triển khai **ứng dụng agent** để phục vụ yêu cầu qua endpoint của ứng dụng. Ví dụ, một ứng dụng agent đang chạy có thể dùng một sandbox cho từng tác vụ phân tích file mà nó điều phối. (tr. 185–186) [OCI Containers API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/containers-api.htm)
 
@@ -124,7 +126,7 @@ Sandbox là môi trường chạy tác vụ. Containers API cung cấp cách là
 
 ## 5. Bắt đầu với OCI Enterprise AI Agents
 
-Có thể xác thực với OCI bằng **Generative AI API Key** hoặc **xác thực dựa trên OCI IAM**. Trong giao diện tương thích OpenAI, `base_url` xác định endpoint theo vùng. Định danh mô hình dùng để chọn mô hình. Header `OpenAI-Project` xác định dự án Generative AI bằng định danh tài nguyên OCI (OCID) của dự án. `client.responses.create()` dùng cấu hình này để gửi yêu cầu tới mô hình. (tr. 187–191)
+**OCI Responses API yêu cầu một Generative AI Project.** Dự án nhóm các tài nguyên như hội thoại, file, cấu hình bộ nhớ và vector store. Khi dùng OpenAI SDK để gọi OCI, **cấu hình `base_url` của OCI theo vùng, phương thức xác thực OCI và OCID của dự án**. Có thể xác thực bằng Generative AI API Key hoặc OCI IAM. Tham số `project` của client đặt header `OpenAI-Project`. Sau đó chọn mô hình khi gọi `client.responses.create()`. (tr. 187–191) [Yêu cầu và cấu hình OCI Responses API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm)
 
 ### Chạy agent toán học qua OCI Responses API
 
@@ -145,7 +147,7 @@ Có thể chạy cùng luồng qua [fixture cục bộ](../labs/README.md#result
 
 Khi dùng **OCI Responses API** trực tiếp, OCI vận hành lớp suy luận và các tool được quản lý. Nhóm phụ trách ứng dụng chọn cách chạy và mở rộng mã client, các hàm cục bộ và dịch vụ mà chúng gọi.
 
-Khi dùng **Hosted Applications**, hãy đóng gói logic và các gói phụ thuộc thành container image, đưa image lên OCI Container Registry, rồi tạo ứng dụng và deployment. Ứng dụng quy định xác thực, mạng và lưu trữ. Endpoint phục vụ deployment đang hoạt động. [Triển khai agent trên OCI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/deploying-agents.htm)
+Khi dùng **Hosted Applications**, hãy đóng gói logic và các gói phụ thuộc thành **container image tương thích Docker**, đưa image lên **OCI Container Registry (OCIR)**, rồi tạo ứng dụng và deployment. Ứng dụng quy định xác thực, mạng và lưu trữ. Endpoint phục vụ deployment đang hoạt động. [Triển khai agent trên OCI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/deploying-agents.htm)
 
 Để mở rộng runtime được host, đặt số replica tối thiểu và tối đa, rồi chọn chỉ số autoscaling như số yêu cầu đồng thời, yêu cầu mỗi giây, CPU hoặc bộ nhớ. Ví dụ, số yêu cầu đồng thời có thể phù hợp với agent thường chờ tool truy xuất. Hosted Applications dùng Persistent File Storage hỗ trợ một replica theo tài liệu OCI. Cấu hình replica của ứng dụng và năng lực phục vụ của mô hình là hai quyết định riêng. (tr. 192–195) [Cấu hình Hosted Applications](https://docs.oracle.com/en-us/iaas/Content/generative-ai/applications.htm#scaling)
 

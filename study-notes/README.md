@@ -4,6 +4,8 @@
 
 Tài liệu tham khảo bằng tiếng Việt về kiến trúc AI agent, điều phối và truy cập dữ liệu. Mỗi module trình bày các chủ đề theo đúng thứ tự trong Student Guide. [Bảng đối chiếu 28 mục tiêu thi 1Z0-1157-26](exam-objectives.md) dẫn tới từng phần kiến thức và bài thực hành tương ứng.
 
+[Bảng đối chiếu 40 câu thi thử](exam-objectives.md#đối-chiếu-40-câu-thi-thử) dẫn tới các ý được in đậm trong từng module.
+
 | Module | Khái niệm chính | Trang trong Student Guide |
 | --- | --- | --- |
 | [01. Giới thiệu về AI agent](01-introduction-to-ai-agents.md) | Vòng lặp thực thi của agent, các mẫu suy luận và phòng thủ chiều sâu | 9–54 |

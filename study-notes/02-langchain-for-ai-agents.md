@@ -41,7 +41,9 @@ Khi đổi nhà cung cấp, có thể vẫn phải thay gói tích hợp, thông
 
 `PromptTemplate` điền giá trị cho các biến trong văn bản. `ChatPromptTemplate` tạo tin nhắn theo vai trò cho chỉ dẫn hệ thống, đầu vào của người dùng và các phản hồi AI trước đó. **Prompt few-shot** dùng các cặp đầu vào và đầu ra để minh họa hành vi mong muốn. (tr. 61)
 
-**LangChain Expression Language (LCEL) dùng toán tử pipe `|` để nối các thành phần. Đầu ra của mỗi bước trở thành đầu vào của bước tiếp theo.** Trong một chuỗi điển hình, mẫu prompt tạo tin nhắn, mô hình sinh phản hồi, rồi `StrOutputParser()` trích xuất văn bản từ phản hồi đó. (tr. 62, 89)
+**LangChain Expression Language (LCEL) dùng toán tử pipe `|` để nối các thành phần. Đầu ra của mỗi bước trở thành đầu vào của bước tiếp theo.** (tr. 62, 89)
+
+**Output parser chuyển phản hồi của mô hình thành định dạng ứng dụng có thể dùng.** Trong chuỗi bên dưới, `StrOutputParser` trích phần văn bản thành chuỗi. Với đầu ra JSON hợp lệ, `JsonOutputParser` phân tích nội dung thành dữ liệu JSON. [Output parsers trong LangChain Core](https://reference.langchain.com/python/langchain-core/output_parsers/)
 
 ```python
 chain = prompt | model | StrOutputParser()
@@ -61,7 +63,7 @@ Một lời gọi mô hình cơ bản trả về đầu ra dựa trên đầu v�
 | Siêu dữ liệu hoặc phần triển khai của tool | Mục đích |
 | --- | --- |
 | `@tool` | Đăng ký một hàm Python làm tool có thể gọi. |
-| Tên hàm và khai báo kiểu | Xác định tool, các trường đầu vào và kiểu dữ liệu của chúng. |
+| Tên hàm và khai báo kiểu | Tên dùng để định danh tool. **Type hint giúp LangChain tạo schema cho các tham số đầu vào.** |
 | Docstring | Mô tả tool làm gì và khi nào nên chọn nó. |
 | Khai báo kiểu trả về | Mô tả kiểu của kết quả dự kiến. |
 | Thân hàm | Thực hiện thao tác khi ứng dụng gọi hàm. |

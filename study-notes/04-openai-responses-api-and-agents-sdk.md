@@ -35,7 +35,9 @@ Responses API cũng hỗ trợ gọi tool và sử dụng ngữ cảnh qua nhi�
 
 ## 2. OpenAI Responses API
 
-`client.responses.create()` nhận mô hình cùng đầu vào dạng văn bản hoặc có cấu trúc. Phản hồi chứa các **mục đầu ra** để xử lý theo cấu trúc, chẳng hạn tin nhắn hoặc lời gọi hàm. Thuộc tính `response.output_text` giúp đọc nhanh phần văn bản của phản hồi. (tr. 130–132)
+`client.responses.create()` nhận mô hình cùng đầu vào dạng văn bản hoặc có cấu trúc. Phản hồi chứa các **mục đầu ra** để xử lý theo cấu trúc, chẳng hạn tin nhắn hoặc lời gọi hàm. (tr. 130–132)
+
+**Responses API** dùng `response.output_text` để lấy văn bản tổng hợp từ các mục đầu ra. **Chat Completions API** đọc văn bản trong lựa chọn đầu tiên bằng `response.choices[0].message.content`. [Đọc đầu ra khi chuyển sang Responses API](https://developers.openai.com/api/docs/guides/migrate-to-responses)
 
 <a name="continuing-a-conversation"></a>
 
@@ -66,9 +68,9 @@ Các tool tích hợp sẵn có thể gồm Web Search, File Search, Code Interp
 
 ## 3. OpenAI Agents SDK
 
-`Agent` chứa chỉ dẫn, mô hình và các tool. **Runner** gửi đầu vào tới mô hình, thực thi các tool dựa trên hàm được yêu cầu rồi gửi kết quả trở lại mô hình. Runner lặp lại quy trình cho đến khi lượt chạy hoàn tất hoặc gặp điều kiện dừng. (tr. 136–141)
+`Agent` chứa chỉ dẫn, mô hình và các tool. **Trường `instructions` đặt chỉ dẫn cấp hệ thống cho agent**, chẳng hạn cách xử lý yêu cầu, khi nào gọi tool và cách trình bày câu trả lời. [Cấu hình Agent](https://openai.github.io/openai-agents-python/agents/) **Runner** gửi đầu vào tới mô hình, thực thi các tool dựa trên hàm được yêu cầu rồi gửi kết quả trở lại mô hình. Runner lặp lại quy trình cho đến khi lượt chạy hoàn tất hoặc gặp điều kiện dừng. (tr. 136–141)
 
-`Runner.run_sync()` chạy đồng bộ. `Runner.run()` chạy bất đồng bộ. Khi lượt chạy hoàn tất, kết quả cuối cùng nằm trong `result.final_output`. (tr. 138–141)
+`Runner.run_sync()` chạy đồng bộ. `Runner.run()` chạy bất đồng bộ. **Khi lượt chạy hoàn tất, kết quả cuối cùng nằm trong `result.final_output`.** (tr. 138–141)
 
 <a name="4-tools-and-function-calling"></a>
 
@@ -123,7 +125,7 @@ Kiểm tra tool nhận 15 và 8, trả về 120, và câu trả lời cuối dù
 | Mẫu | Agent nào điều khiển lượt xử lý? | Cách cấu hình |
 | --- | --- | --- |
 | **Mẫu agent quản lý (Manager pattern)** | **Agent quản lý giữ quyền điều khiển, giao các tác vụ có phạm vi rõ ràng cho agent chuyên trách và có thể tổng hợp kết quả thành câu trả lời cuối cùng.** | Cung cấp các agent chuyên trách cho agent quản lý qua `Agent.as_tool()`. |
-| **Handoff** | Agent chuyên trách tiếp quản và có thể trả lời trực tiếp cho người dùng. | Liệt kê các agent đích trong `handoffs`. Dùng `handoff_description` để mô tả khi nào nên chuyển yêu cầu đến từng agent chuyên trách. |
+| **Handoff** | **Agent chuyên trách tiếp quản** và có thể trả lời trực tiếp cho người dùng. | Liệt kê các agent đích trong `handoffs`. Dùng `handoff_description` để mô tả khi nào nên chuyển yêu cầu đến từng agent chuyên trách. |
 
 Ví dụ, agent quản lý hỗ trợ khách hàng có thể hỏi agent Đơn hàng về trạng thái giao hàng, hỏi agent Trả hàng về chính sách trả hàng rồi tổng hợp kết quả. Nếu agent Trả hàng cần trực tiếp xử lý phần còn lại của lượt người dùng, agent phân luồng có thể handoff cho agent đó. Trong cả hai mẫu, các agent chuyên trách đều có thể có tool riêng. Trong lab handoff, `result.last_agent.name` cho biết agent nào hoàn tất lượt chạy. [Điều phối agent](https://openai.github.io/openai-agents-python/multi_agent/) · [Lab handoff](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/OpenAI/06_multi_agent_handoffs.py)
 
@@ -138,7 +140,9 @@ Ví dụ, agent quản lý hỗ trợ khách hàng có thể hỏi agent Đơn h
 | **Đầu vào của function tool** | Chạy trước mỗi lần gọi tool có gắn guardrail. | Kiểm tra người gọi có quyền xem đơn cụ thể trước khi đọc dữ liệu. |
 | **Đầu ra của function tool** | Chạy sau khi tool thực thi, trước khi kết quả được dùng tiếp. | Thay kết quả chứa dữ liệu nhạy cảm bằng thông báo an toàn. |
 
-`@input_guardrail` hoặc `@output_guardrail` có thể trả về `GuardrailFunctionOutput(tripwire_triggered=True, ...)` để Runner dừng lượt chạy. Dùng `@tool_input_guardrail` và `@tool_output_guardrail` để định nghĩa kiểm tra, rồi gắn vào `tool_input_guardrails` và `tool_output_guardrails` của function tool. Guardrail của function tool có thể từ chối lời gọi hoặc kết quả và cho agent tiếp tục với thông báo thay thế, hoặc dừng lượt chạy bằng tripwire. Khi một thao tác có tác động bên ngoài, kiểm tra quyền và điều kiện thực thi trước khi gọi tool. Guardrail đầu ra chạy sau thao tác. Áp dụng quy tắc tại lớp thực thi tương ứng cho hosted tool và handoff. (tr. 153–156) [Phạm vi và chế độ chạy guardrail](https://openai.github.io/openai-agents-python/guardrails/) · [Lab guardrail đầu vào](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/OpenAI/07_guardrails.py)
+**Guardrail đầu vào hoặc đầu ra có thể dùng hàm kiểm tra trực tiếp hoặc gọi một agent phụ để phân loại nội dung.** Hàm guardrail trả `GuardrailFunctionOutput`. Khi `tripwire_triggered=True`, **Runner dừng lượt chạy và phát sinh ngoại lệ** `InputGuardrailTripwireTriggered` hoặc `OutputGuardrailTripwireTriggered` tương ứng. [Tripwire và cách triển khai guardrail](https://openai.github.io/openai-agents-python/guardrails/#tripwires)
+
+Dùng `@tool_input_guardrail` và `@tool_output_guardrail` để định nghĩa kiểm tra, rồi gắn vào `tool_input_guardrails` và `tool_output_guardrails` của function tool. Guardrail của function tool có thể từ chối lời gọi hoặc kết quả và cho agent tiếp tục với thông báo thay thế, hoặc dừng lượt chạy bằng tripwire. Khi một thao tác có tác động bên ngoài, kiểm tra quyền và điều kiện thực thi trước khi gọi tool. Guardrail đầu ra chạy sau thao tác. Áp dụng quy tắc tại lớp thực thi tương ứng cho hosted tool và handoff. (tr. 153–156) [Phạm vi và chế độ chạy guardrail](https://openai.github.io/openai-agents-python/guardrails/) · [Lab guardrail đầu vào](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/OpenAI/07_guardrails.py)
 
 ### Tracing
 

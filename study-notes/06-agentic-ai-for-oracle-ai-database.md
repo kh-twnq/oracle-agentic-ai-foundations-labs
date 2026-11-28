@@ -22,7 +22,7 @@ Nội dung theo chương trình học ở tr. 198 của Student Guide.
 
 ## 1. Agentic AI cho Oracle AI Database
 
-Agent trong doanh nghiệp có thể cần truy xuất thông tin liên quan, thực hiện thao tác cơ sở dữ liệu đã được cấp quyền và cung cấp các tool của mình cho ứng dụng khác. Oracle AI Database có các tính năng phục vụ từng nhiệm vụ đó. (tr. 199–200)
+Agent trong doanh nghiệp có thể cần truy xuất thông tin liên quan, thực hiện thao tác cơ sở dữ liệu đã được cấp quyền và cung cấp các tool của mình cho ứng dụng khác. Bốn khả năng được giới thiệu cùng nhau trong khóa học là **AI Vector Search, Private Agent Factory, Select AI Agent và Autonomous AI Database MCP Server**. (tr. 199–200)
 
 | Tính năng | Trách nhiệm |
 | --- | --- |
@@ -49,11 +49,13 @@ Oracle AI Vector Search lưu embedding cùng với dữ liệu quan hệ. Truy v
 ## 3. Quy trình Oracle AI Vector Search
 
 1. **Chuẩn bị.** Trích xuất văn bản và chia tài liệu dài thành các đoạn vừa với giới hạn đầu vào của mô hình embedding. Các đoạn nhỏ giúp bước truy xuất trả về đúng phần liên quan trong tài liệu.
-2. **Tạo embedding.** Để tạo embedding trong cơ sở dữ liệu, có thể nạp mô hình ONNX bằng `DBMS_VECTOR.LOAD_ONNX_MODEL` rồi gọi mô hình qua `VECTOR_EMBEDDING`. Nhà cung cấp bên ngoài cũng có thể tạo embedding. Chuỗi xử lý tài liệu có thể dùng `UTL_TO_TEXT`, `UTL_TO_CHUNKS` và `UTL_TO_EMBEDDINGS`.
-3. **Lưu trữ và lập chỉ mục.** Lưu vector cùng định danh nguồn và siêu dữ liệu. HNSW và IVF là các loại chỉ mục vector. Chỉ mục vector lai hỗ trợ kết hợp nhiều phương thức tìm kiếm.
+2. **Tạo embedding.** Để tạo embedding trong cơ sở dữ liệu, có thể nạp mô hình ONNX bằng `DBMS_VECTOR.LOAD_ONNX_MODEL` rồi gọi mô hình qua `VECTOR_EMBEDDING`. Nhà cung cấp bên ngoài cũng có thể tạo embedding.
+3. **Lưu trữ và lập chỉ mục.** Lưu vector cùng định danh nguồn và siêu dữ liệu. HNSW và IVF là các loại chỉ mục vector. **Chỉ mục vector lai (hybrid vector index) kết hợp tìm kiếm ngữ nghĩa bằng vector và tìm kiếm theo từ khóa bằng Oracle Text.** [Ví dụ tìm kiếm lai](https://docs.oracle.com/en/database/oracle/oracle-database/26/vecse/query-hybrid-vector-indexes-end-end-example.html)
 4. **Truy xuất.** Tạo embedding cho truy vấn, xếp hạng các kết quả ứng viên rồi trả về top-k kết quả. RAG có thể đưa nội dung truy xuất được vào ngữ cảnh của mô hình. (tr. 206–211)
 
-Cột `VECTOR` có thể khai báo số chiều và định dạng như `FLOAT32`, `FLOAT64`, `INT8` hoặc `BINARY`. Vector dày lưu mọi vị trí. Vector thưa lưu vị trí và giá trị của các phần tử khác 0. (tr. 210)
+**Chuỗi tiện ích `DBMS_VECTOR_CHAIN` xử lý tài liệu theo thứ tự `UTL_TO_TEXT` → `UTL_TO_CHUNKS` → `UTL_TO_EMBEDDINGS`.** Ba bước lần lượt trích văn bản, chia đoạn và tạo embedding cho các đoạn. [Các hàm trong DBMS_VECTOR_CHAIN](https://docs.oracle.com/en/database/oracle/oracle-database/26/vecse/dbms_vector_chain-vecse.html)
+
+Cột `VECTOR` có thể khai báo số chiều và định dạng phần tử **`FLOAT32`, `FLOAT64`, `INT8` hoặc `BINARY`**. Vector dày lưu mọi vị trí. Vector thưa lưu vị trí và giá trị của các phần tử khác 0. (tr. 210)
 
 | Thước đo | Đại lượng được đo |
 | --- | --- |
@@ -83,7 +85,7 @@ ORDER BY distance, product_id
 FETCH FIRST 5 ROWS ONLY;
 ```
 
-Đưa tên, mô tả, giá và mã sản phẩm của các hàng truy xuất vào ngữ cảnh của agent. Yêu cầu agent đề xuất sản phẩm dựa trên các hàng đó và dẫn mã sản phẩm làm căn cứ. Nếu kết quả trống hoặc thiếu dữ kiện, agent báo thiếu căn cứ hoặc hỏi lại. Bước truy xuất tạo bằng chứng cho câu trả lời mà không cần tinh chỉnh mô hình.
+**RAG đưa nội dung truy xuất được vào ngữ cảnh của LLM để làm căn cứ cho câu trả lời.** Trong ví dụ này, ngữ cảnh gồm tên, mô tả, giá và mã sản phẩm của các hàng tìm được. Yêu cầu agent đề xuất sản phẩm dựa trên các hàng đó và dẫn mã sản phẩm làm căn cứ. Nếu kết quả trống hoặc thiếu dữ kiện, agent báo thiếu căn cứ hoặc hỏi lại. Bước truy xuất tạo bằng chứng cho câu trả lời mà không cần tinh chỉnh mô hình.
 
 Trong lab, điều kiện dưới 100 USD và phép xếp hạng cosine đưa **Swimming Goggles** lên đầu cho truy vấn này. File SQL tạo sẵn chứa vector mẫu và có thể chạy trên Oracle AI Database 26ai mà không cần tạo bảng `products`. [SQL lab được tạo sẵn](../labs/sample-results/vector-search-oracle.sql) · [Kết quả Oracle FreeSQL](../labs/sample-results/vector-search-oracle.json) · [Cách chạy lab](../labs/README.md#vector-search-comparison-with-the-guide)
 
@@ -91,7 +93,9 @@ Trong lab, điều kiện dưới 100 USD và phép xếp hạng cosine đưa **
 
 ## 5. Giới thiệu về Oracle AI Database Private Agent Factory
 
-Private Agent Factory cung cấp các agent dựng sẵn, công cụ tạo workflow trực quan và các tích hợp dữ liệu. Đăng nhập một lần (SSO), quyền truy cập theo vai trò và guardrail cho prompt hỗ trợ công tác quản trị. Có thể triển khai dưới dạng container bằng Podman tại chỗ hoặc trên đám mây, với kết nối tới Oracle AI Database và nhà cung cấp mô hình. (tr. 223–225)
+Private Agent Factory cung cấp các agent dựng sẵn, công cụ tạo workflow trực quan và các tích hợp dữ liệu. Đăng nhập một lần (SSO), quyền truy cập theo vai trò và guardrail cho prompt hỗ trợ công tác quản trị. **Agent Factory được đóng gói dạng container và chạy bằng Podman cùng Podman Compose**, với kết nối tới Oracle AI Database và nhà cung cấp mô hình. (tr. 223–225) [Triển khai Private Agent Factory](https://docs.oracle.com/en/database/oracle/agent-factory/26.7/paias/prerequisites.html)
+
+**Knowledge Agent và Data Analysis Agent** là hai agent dựng sẵn được giới thiệu trong khóa học.
 
 | Thành phần | Thành phần này làm việc với gì? |
 | --- | --- |
@@ -126,13 +130,19 @@ SELECT AI SHOWSQL Which products cost less than 100 dollars;
 
 ### Điều phối tác vụ bằng Select AI Agent
 
-**Select AI Agent** điều phối workflow của agent gần nơi lưu trữ dữ liệu. **Hồ sơ AI (AI profile)** cung cấp cấu hình mô hình và ngữ cảnh dữ liệu. `DBMS_CLOUD_AI_AGENT` định nghĩa agent, tool, tác vụ và nhóm. Vai trò trong cơ sở dữ liệu và chính sách Virtual Private Database (VPD) kiểm soát quyền truy cập. Cơ chế kiểm toán ghi lại hoạt động trong cơ sở dữ liệu. (tr. 229–231)
+**Select AI Agent là framework xây dựng và điều phối agent trong cơ sở dữ liệu.** **Hồ sơ AI (AI profile)** cung cấp cấu hình mô hình và ngữ cảnh dữ liệu. `DBMS_CLOUD_AI_AGENT` định nghĩa agent, tool, tác vụ và nhóm. Vai trò trong cơ sở dữ liệu và chính sách Virtual Private Database (VPD) kiểm soát quyền truy cập. Cơ chế kiểm toán ghi lại hoạt động trong cơ sở dữ liệu. (tr. 229–231)
 
-Lập kế hoạch (Planning) chọn các bước. Sử dụng tool (Tool Use) thực hiện hành động. Đánh giá lại (Reflection) kiểm tra kết quả. Quản lý bộ nhớ (Memory Management) giữ ngữ cảnh liên quan qua các lượt. Một lượt chạy có thể dùng RAG để truy xuất nội dung, **NL2SQL** để sinh SQL, PL/SQL để thực hiện thao tác nghiệp vụ hoặc REST để kết nối với hệ thống bên ngoài. (tr. 232–234)
+Lập kế hoạch (Planning) chọn các bước. Sử dụng tool (Tool Use) thực hiện hành động. Đánh giá lại (Reflection) kiểm tra kết quả. Quản lý bộ nhớ (Memory Management) giữ ngữ cảnh liên quan qua các lượt. Một workflow có thể kết hợp ba nhóm tool. (tr. 232–234)
+
+- **Tool dựng sẵn** như RAG để truy xuất nội dung và NL2SQL để sinh SQL.
+- **Thủ tục PL/SQL tùy chỉnh** để chạy thao tác nghiệp vụ đã định nghĩa.
+- **Dịch vụ REST bên ngoài** được gọi qua tool tùy chỉnh.
+
+[Tổng quan Select AI Agent](https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/about-select-ai-agents.html)
 
 ## 7. Oracle Autonomous AI Database MCP Server
 
-**Oracle Autonomous AI Database MCP Server** là tính năng đa tenant được quản lý của Autonomous AI Database Serverless. MCP client dùng Streamable HTTP qua HTTPS để kết nối tới endpoint ứng với vùng và OCID của cơ sở dữ liệu. Server công bố các tool của Select AI Agent như NL2SQL, RAG và PL/SQL tùy chỉnh. (tr. 235–240)
+**Oracle Autonomous AI Database MCP Server** là tính năng đa tenant được quản lý của Autonomous AI Database Serverless. MCP client dùng **Streamable HTTP qua HTTPS** để kết nối tới endpoint ứng với vùng và OCID của cơ sở dữ liệu. Server công bố các tool của Select AI Agent như NL2SQL, RAG và PL/SQL tùy chỉnh. (tr. 235–240)
 
 Thông tin xác thực của cơ sở dữ liệu xác định người gọi. Vai trò và chính sách trong cơ sở dữ liệu quyết định tool và dữ liệu nào có thể truy cập. Hồ sơ AI có thể cung cấp siêu dữ liệu schema cho NL2SQL và giảm việc khám phá schema trong lúc xử lý yêu cầu. (tr. 237–241)
 
