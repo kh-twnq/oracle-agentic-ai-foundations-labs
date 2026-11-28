@@ -48,13 +48,21 @@ Anthropic giới thiệu MCP vào tháng 11 năm 2024. Dự án thuộc Agentic 
 | **MCP client** | Trao đổi thông điệp theo giao thức với một server. |
 | **MCP server** | Công bố các khả năng được hỗ trợ, **thực thi những tool do nó cung cấp** và trả kết quả. |
 
-Server có thể cung cấp **Tools** để thực hiện hành động, **Resources** cho dữ liệu có địa chỉ URI và **Prompts** cho các mẫu có thể dùng lại. Host quyết định cách cung cấp những khả năng hiện có cho mô hình và người dùng. (tr. 96–98)
+| Khả năng của server | Khám phá và sử dụng | Ví dụ |
+| --- | --- | --- |
+| **Tools** | `tools/list` và `tools/call`. Mô hình có thể đề xuất một lời gọi, còn host quản lý việc thực thi. | `get_order` tra cứu một đơn hàng. |
+| **Resources** | `resources/list` và `resources/read`. Ứng dụng chọn dữ liệu theo URI để đưa vào ngữ cảnh. | Văn bản chính sách trả hàng. |
+| **Prompts** | `prompts/list` và `prompts/get`. Người dùng có thể chọn một mẫu tương tác rồi điền tham số. | Mẫu soạn câu trả lời cho yêu cầu trả hàng. |
+
+Server khai báo các khả năng nó hỗ trợ. Host chọn cách đưa chúng vào ứng dụng. (tr. 96–98) [Kiến trúc MCP](https://modelcontextprotocol.io/docs/learn/architecture)
 
 <a name="connection-lifecycle"></a>
 
 ### Vòng đời kết nối
 
-1. **Khởi tạo.** Client dùng `initialize` để thỏa thuận phiên bản giao thức và trao đổi thông tin về các khả năng được hỗ trợ với server. Sau đó client gửi thông báo đã khởi tạo xong.
+Các bước sau dùng phiên bản MCP `2025-11-25` để minh họa luồng mà lab sử dụng.
+
+1. **Khởi tạo.** Client dùng `initialize` để thỏa thuận phiên bản giao thức và trao đổi thông tin về các khả năng được hỗ trợ với server. Sau đó client gửi thông báo `notifications/initialized`.
 2. **Khám phá.** **`tools/list` trả về tên, mô tả và định nghĩa `inputSchema` của các tool.** Resource và prompt có phương thức khám phá riêng.
 3. **Vận hành.** **Client dùng `tools/call` để gọi một tool cụ thể theo tên và truyền các đối số.** Server chạy tool rồi trả kết quả.
 4. **Kết thúc.** Client đóng kết nối. (tr. 99–102)
@@ -102,10 +110,20 @@ MCP dùng **JSON-RPC 2.0** để định dạng thông điệp. Một yêu cầu
 
 | Cơ chế truyền tải | Kênh giao tiếp |
 | --- | --- |
-| **stdio** | Một tiến trình cục bộ trao đổi thông điệp với client qua đầu vào và đầu ra chuẩn. |
-| **Streamable HTTP** | Client gửi yêu cầu HTTP tới một endpoint. Phản hồi có thể dùng Server-Sent Events (SSE). Dịch vụ có thể yêu cầu xác thực HTTP. |
+| **stdio** | Client khởi chạy server dưới dạng tiến trình con. Mỗi dòng trên `stdin` và `stdout` chứa một thông điệp JSON-RPC. Server ghi log vào `stderr`. |
+| **Streamable HTTP** | Client dùng HTTP POST để gửi thông điệp tới endpoint MCP. Server có thể trả JSON hoặc luồng Server-Sent Events (SSE) cho một yêu cầu. Endpoint có thể hỗ trợ GET để mở luồng SSE riêng. |
 
-**JSON-RPC định nghĩa cấu trúc thông điệp. Cơ chế truyền tải chuyển các thông điệp đó.** Việc khám phá và gọi tool có cùng mục đích trên cả hai cơ chế truyền tải. (tr. 103)
+Ví dụ, sau khi kết nối đã khởi tạo, client gửi một yêu cầu và nhận phản hồi có cùng `id`.
+
+```json
+{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"get_order","arguments":{"order_id":"ORD-42"}}}
+```
+
+```json
+{"jsonrpc":"2.0","id":7,"result":{"content":[{"type":"text","text":"Delivered"}]}}
+```
+
+Phản hồi lỗi ở cấp giao thức dùng `error` thay cho `result`. Lỗi phát sinh trong quá trình chạy tool có thể nằm trong `result` với `isError: true` để agent xử lý. **JSON-RPC định nghĩa thông điệp. stdio và Streamable HTTP chuyển thông điệp.** (tr. 103) [Đặc tả vòng đời](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle) · [Tool](https://modelcontextprotocol.io/specification/2025-11-25/server/tools) · [Transport](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
 
 <a name="3-add-mcp-server-to-your-first-agent"></a>
 
@@ -120,6 +138,12 @@ Chuyển một tool cục bộ sang MCP làm thay đổi nơi chạy hàm xử l
 Ví dụ, agent có thể thấy `get_order` từ server Orders và `check_stock` từ server Inventory. Lời gọi `get_order` được gửi đến server Orders. Các server hoạt động độc lập và cung cấp các tool riêng.
 
 Gọi trực tiếp phù hợp với logic cục bộ đơn giản. Giao diện MCP hữu ích khi nhiều ứng dụng dùng chung tool hoặc khi phần triển khai do một dịch vụ khác quản lý. (tr. 107–115, 121)
+
+### Tích hợp server toán học vào LangChain
+
+Trong lab, `mcp_math_server.py` công bố bốn tool toán học. `first_agent_with_mcp.py` cấu hình server `math` qua `stdio`, gọi `await client.get_tools()`, truyền danh sách vào `create_agent(model, tools)` rồi gọi `await agent.ainvoke(...)`. Khi mô hình chọn một tool, adapter chuyển yêu cầu sang `tools/call` và đưa kết quả trở lại vòng lặp agent. [Mã lab MCP](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/MCP)
+
+Chạy [fixture cục bộ](../labs/README.md#reproduce-the-local-runs) để so sánh hai bước. Kết quả khám phá phải có `add`, `multiply`, `divide` và `square_root`. Yêu cầu tính 15 nhân 8 rồi chia 3 phải dùng kết quả 120 làm đầu vào cho phép chia và cho ra 40. [Kết quả khám phá và gọi tool](../labs/sample-results/mcp-math.json)
 
 <a name="4-real-world-mcp-walkthrough"></a>
 

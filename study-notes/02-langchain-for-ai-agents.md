@@ -68,6 +68,41 @@ Một lời gọi mô hình cơ bản trả về đầu ra dựa trên đầu v�
 
 Định nghĩa tool gửi cho mô hình mô tả tên, mục đích và các đối số được chấp nhận. Trong định dạng API dùng ở khóa học, chúng xuất hiện dưới dạng `name`, `description` và `parameters`. Schema tham số cho biết những đầu vào nào bắt buộc. `create_agent()` cấu hình mô hình và tool cho agent. `agent.invoke()` bắt đầu một lượt chạy với các tin nhắn được cung cấp. (tr. 66–74)
 
+### Thực hành với prompt, chain và tool
+
+Ví dụ dùng cùng một chat model cho hai cách chạy. Chain LCEL trả lời câu hỏi về khái niệm. Agent nhận câu hỏi cần tính toán, chọn tool và dùng kết quả để trả lời. Cài dependencies theo [hướng dẫn lab](../labs/README.md#reproduce-the-local-runs) và đặt `OPENAI_API_KEY` khi chạy với mô hình thật.
+
+```python
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+from langchain.tools import tool
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+
+model = init_chat_model("openai:gpt-4o-mini")
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Giải thích khái niệm trong một câu."),
+    ("human", "{question}"),
+])
+chain = prompt | model | StrOutputParser()
+print(chain.invoke({"question": "Phép nhân là gì?"}))
+
+@tool
+def multiply(a: int, b: int) -> int:
+    """Nhân hai số nguyên."""
+    return a * b
+
+agent = create_agent(
+    model=model,
+    tools=[multiply],
+    system_prompt="Dùng tool multiply khi tính phép nhân.",
+)
+result = agent.invoke({"messages": [{"role": "user", "content": "Tính 15 × 8."}]})
+print(result["messages"][-1].content)
+```
+
+Kết quả cần kiểm tra là lời gọi `multiply(a=15, b=8)`, một `ToolMessage` trả về 120 và câu trả lời cuối dùng giá trị đó. Lab Oracle University cho phép thử thêm trường hợp hai tool phụ thuộc nhau, chẳng hạn lấy kết quả phép nhân để làm đầu vào phép chia. [Mã lab LangChain](https://github.com/oracle-university-labs/ou-generativeai-pro/tree/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/LangChain) · [Kết quả chạy fixture](../labs/README.md#results)
+
 <a name="3-langchain-agent-under-the-hood"></a>
 
 ## 3. Cách agent LangChain hoạt động bên trong

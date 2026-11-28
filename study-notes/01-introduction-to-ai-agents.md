@@ -22,11 +22,13 @@ Nội dung theo chương trình học ở tr. 10 của Student Guide. Xem [Ôn t
 
 **AI agent chọn hành động tiếp theo dựa trên mục tiêu và thông tin có được tại thời điểm đó.** Một agent dựa trên LLM kết hợp mô hình, các tool và vòng lặp thực thi. Kết quả từ tool có thể làm đổi hướng xử lý của agent. (tr. 11–16)
 
-| Hệ thống | Điều gì quyết định bước tiếp theo? |
-| --- | --- |
-| Chatbot | Mô hình tạo câu trả lời dựa trên cuộc hội thoại và ngữ cảnh hiện có. |
-| Workflow | **Quy tắc của ứng dụng xác định trước các bước và điều kiện rẽ nhánh.** |
-| AI agent | **Mô hình đề xuất hành động tiếp theo dựa trên mục tiêu, ngữ cảnh hiện tại và kết quả từ tool.** Ứng dụng thực thi các quy tắc phân quyền. |
+| Hệ thống | Mức tự chủ và cách xử lý | Vai trò của tool |
+| --- | --- | --- |
+| Chatbot truyền thống | Phản hồi từng lượt theo kịch bản, FAQ hoặc ngữ cảnh chat. | Có thể tra một nguồn cấu hình sẵn để trả lời. |
+| Workflow theo quy tắc | **Quy tắc của ứng dụng xác định trước các bước và điều kiện rẽ nhánh.** | Ứng dụng gọi dịch vụ tại các bước đã định. |
+| AI agent | **Mô hình chọn bước tiếp theo dựa trên mục tiêu, ngữ cảnh và kết quả vừa quan sát.** Runtime giữ quyền thực thi trong các giới hạn của ứng dụng. | Mô hình có thể chọn tool và đối số ở mỗi vòng lặp, rồi điều chỉnh bước sau theo kết quả. |
+
+Với cùng câu hỏi về trả hàng, chatbot có thể trả lời từ FAQ, workflow kiểm tra ngày giao theo một cây quyết định, còn agent có thể tra đơn, nhận ra đó là đơn quốc tế và tìm chính sách tương ứng. Khi phân loại, hãy xem ai quyết định bước tiếp theo và kết quả của tool có thể đổi hướng xử lý như thế nào.
 
 <a name="2-ai-agent-core-components"></a>
 
@@ -47,7 +49,7 @@ Nội dung theo chương trình học ở tr. 10 của Student Guide. Xem [Ôn t
 - **Act.** Kiểm tra tính hợp lệ của lời gọi tool được đề xuất và thực thi nếu được phép.
 - **Observe.** **Tiếp nhận kết quả của hành động trước và đưa kết quả đó vào lần ra quyết định tiếp theo.** Kết quả quan sát được có thể là dữ liệu trả về, kết quả rỗng hoặc lỗi của tool.
 
-Ví dụ, sau khi chatbot gọi `get_order`, nó nhận và xem trạng thái trả về. Nếu đơn đã giao, chatbot có thể tra cứu chính sách trả hàng. Nếu kết quả rỗng, chatbot có thể hỏi lại mã đơn hàng.
+Ví dụ, sau khi agent gọi `get_order`, nó nhận và xem trạng thái trả về. Nếu đơn đã giao, chatbot có thể tra cứu chính sách trả hàng. Nếu kết quả rỗng, chatbot có thể hỏi lại mã đơn hàng.
 
 Runtime có thể dừng khi có câu trả lời cuối cùng, chạm giới hạn số vòng lặp, gặp lỗi hoặc handoff cho người xử lý. (tr. 15–21)
 

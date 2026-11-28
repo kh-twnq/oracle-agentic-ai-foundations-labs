@@ -60,6 +60,8 @@ OCI Enterprise AI kết hợp **mô hình (Models)** để xử lý thông tin, 
 
 Ở chế độ Dedicated, ứng dụng gọi endpoint của mô hình được triển khai trên cluster. Khi chọn chế độ, cân nhắc cam kết sử dụng, chi phí và mức hỗ trợ của mô hình theo vùng. Cả hai chế độ đều áp dụng cơ chế xác thực và kiểm soát quyền của OCI. (tr. 174–176) [Các chế độ phục vụ mô hình trên OCI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/modes.htm)
 
+Ở giai đoạn phát triển và kiểm thử, OCI Generative AI cung cấp mô hình chat, embedding, rerank và API để thử agent. Khi triển khai, nhóm có thể dùng Hosted Applications và lưu image trong OCI Container Registry (OCIR). Khi vận hành, IAM, cấu hình mạng và guardrail kiểm soát quyền và hành vi.
+
 Các biện pháp kiểm soát mạng gồm Private Endpoints và Zero Trust Packet Routing (ZPR). Chính sách Identity and Access Management (IAM) quản lý quyền truy cập tài nguyên. Guardrail hỗ trợ kiểm duyệt nội dung và xử lý prompt injection cũng như thông tin nhận dạng cá nhân (PII). (tr. 177)
 
 ### Reranking trong RAG
@@ -87,7 +89,16 @@ Hai cách có thể kết hợp. Một Hosted Agentic App có thể gọi OCI Re
 
 ## 4. Các thành phần của OCI Enterprise AI Agents
 
-OCI Responses API cung cấp giao diện tương thích OpenAI để định tuyến đến mô hình, suy luận về cách dùng tool và quản lý trạng thái. File Search truy xuất nội dung tài liệu. Code Interpreter chạy Python trong sandbox. Function Calling yêu cầu gọi hàm do ứng dụng cung cấp. MCP Calling kết nối với MCP server. (tr. 182–184)
+OCI Responses API cung cấp giao diện tương thích OpenAI để định tuyến đến mô hình, suy luận về cách dùng tool và quản lý trạng thái. (tr. 182–184)
+
+| Tool | Vai trò khi thực thi |
+| --- | --- |
+| **File Search** | OCI truy xuất nội dung từ vector store được chỉ định. |
+| **Code Interpreter** | OCI chạy Python trong môi trường cô lập. |
+| **Function Calling** | Mô hình yêu cầu gọi hàm. Ứng dụng kiểm tra đối số, thực thi hàm và gửi kết quả về OCI. |
+| **MCP Calling** | OCI kết nối MCP server từ xa và gọi các tool được phép. |
+
+Chọn mô hình và vùng có hỗ trợ tool cần dùng. [Tool trong OCI Responses API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm#use-tools-with-the-responses-api)
 
 ### Trạng thái hội thoại và bộ nhớ
 
@@ -113,13 +124,30 @@ Sandbox là môi trường chạy tác vụ. Containers API cung cấp cách là
 
 ## 5. Bắt đầu với OCI Enterprise AI Agents
 
-Có thể xác thực với OCI bằng **Generative AI API Key** hoặc **ký yêu cầu bằng OCI IAM**. Trong giao diện tương thích OpenAI, `base_url` xác định endpoint theo vùng. Định danh mô hình dùng để chọn mô hình. Header `OpenAI-Project` xác định dự án Generative AI bằng định danh tài nguyên OCI (OCID) của dự án. `client.responses.create()` dùng cấu hình này để gửi yêu cầu tới mô hình. (tr. 187–191)
+Có thể xác thực với OCI bằng **Generative AI API Key** hoặc **xác thực dựa trên OCI IAM**. Trong giao diện tương thích OpenAI, `base_url` xác định endpoint theo vùng. Định danh mô hình dùng để chọn mô hình. Header `OpenAI-Project` xác định dự án Generative AI bằng định danh tài nguyên OCI (OCID) của dự án. `client.responses.create()` dùng cấu hình này để gửi yêu cầu tới mô hình. (tr. 187–191)
+
+### Chạy agent toán học qua OCI Responses API
+
+1. Tạo hoặc chọn dự án Generative AI, cấp quyền IAM và chuẩn bị Generative AI API Key. Chọn một vùng và model ID hỗ trợ OCI Responses API và Function Calling. [Thiết lập OCI Responses API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/get-started-agents.htm)
+2. Sau khi cài [dependencies của repo](../labs/README.md#reproduce-the-local-runs), đặt `OCI_GENAI_API_KEY`, `REGION`, `MODEL_ID` và `PROJECT_ID` trong môi trường local. Chạy từ thư mục gốc.
+
+   ```sh
+   .venv/bin/python labs/oracle-university/agentic-ai-foundations/OCI/oci_first_agent.py
+   ```
+
+3. Kiểm tra lời gọi chat đơn giản trước, sau đó xem agent thực hiện các phép tính. Với câu hỏi 42 + 58, tool `add` nhận hai đối số, ứng dụng chạy hàm và gửi `function_call_output` khớp `call_id`. Câu trả lời cuối dùng kết quả 100. Lab dùng `previous_response_id` để tiếp tục lượt gọi. [Mã lab OCI](https://github.com/oracle-university-labs/ou-generativeai-pro/blob/085b7b13eeae897e3017ad110b703e2dcfd3a38c/agentic-ai-foundations/OCI/oci_first_agent.py)
+
+Có thể chạy cùng luồng qua [fixture cục bộ](../labs/README.md#results) để kiểm tra vòng gọi tool và chuyển kết quả. Tài khoản OCI có quyền phù hợp cần thiết để xác nhận IAM và inference trên endpoint thật.
 
 <a name="6-oci-enterprise-ai-agents--deploy-and-scale"></a>
 
 ## 6. Triển khai và mở rộng OCI Enterprise AI Agents
 
-Khi triển khai trên OCI, logic của agent và các gói phụ thuộc được đóng gói thành container image. OCI Container Registry lưu image này. Cấu hình triển khai quy định định danh, mạng, lưu trữ và cách mở rộng. Endpoint được quản lý chuyển yêu cầu đến phiên bản ứng dụng đã triển khai. (tr. 192–195)
+Khi dùng **OCI Responses API** trực tiếp, OCI vận hành lớp suy luận và các tool được quản lý. Nhóm phụ trách ứng dụng chọn cách chạy và mở rộng mã client, các hàm cục bộ và dịch vụ mà chúng gọi.
+
+Khi dùng **Hosted Applications**, hãy đóng gói logic và các gói phụ thuộc thành container image, đưa image lên OCI Container Registry, rồi tạo ứng dụng và deployment. Ứng dụng quy định xác thực, mạng và lưu trữ. Endpoint phục vụ deployment đang hoạt động. [Triển khai agent trên OCI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/deploying-agents.htm)
+
+Để mở rộng runtime được host, đặt số replica tối thiểu và tối đa, rồi chọn chỉ số autoscaling như số yêu cầu đồng thời, yêu cầu mỗi giây, CPU hoặc bộ nhớ. Ví dụ, số yêu cầu đồng thời có thể phù hợp với agent thường chờ tool truy xuất. Hosted Applications dùng Persistent File Storage hỗ trợ một replica theo tài liệu OCI. Cấu hình replica của ứng dụng và năng lực phục vụ của mô hình là hai quyết định riêng. (tr. 192–195) [Cấu hình Hosted Applications](https://docs.oracle.com/en-us/iaas/Content/generative-ai/applications.htm#scaling)
 
 <a name="module-review"></a>
 
